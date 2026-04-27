@@ -1,140 +1,139 @@
-# Glowly E-commerce Cosmetic Website
+# <p align="center">✨ Glowly ✨</p>
+<p align="center">
+  <strong>Your Premium Cosmetic Destination</strong><br>
+  <em>A Full-Stack E-commerce Platform for Beauty and Elegance</em>
+</p>
 
-Welcome to **Glowly**, an online platform for affordable and premium makeup products. Shop your favorite face, lip makeup, and essential beauty products all in one place.
+<p align="center">
+  <img src="https://img.shields.io/badge/status-active-success.svg" alt="Status">
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
+  <img src="https://img.shields.io/badge/PRs-welcome-orange.svg" alt="PRs Welcome">
+</p>
 
-  # features
-=======
-## Features
+---
 
-### User Features
-- **Authentication**
-  - Email & Password registration/login
-  - OTP verification
-  - Google OAuth integration
-  - Forgot password functionality
-  - Session management
+## 🚀 Tech Stack
 
-- **Product Management**
-  - Browse products with search and filter options
-  - View detailed product information
-  - Add/remove products to wishlist
-  - Shopping cart functionality
-  - Multiple product variants support
+### **Frontend & Design**
+[![My Skills](https://skillicons.dev/icons?i=html,css,js,bootstrap,jquery)](https://skillicons.dev)
+- **EJS**: Powerful templating engine for dynamic content rendering.
+- **Chart.js**: For real-time sales and revenue analytics dashboard.
+- **Notyf / SweetAlert2**: For sleek, modern user notifications and alerts.
 
-- **Order Management**
-  - Secure checkout process
-  - Multiple payment options (Razorpay integration)
-  - Order tracking
-  - Order cancellation and return requests
-  - Invoice generation (PDF)
-  - Order history
+### **Backend & Logic**
+[![My Skills](https://skillicons.dev/icons?i=nodejs,express,mongodb,mongoose)VP](https://skillicons.dev)
+- **Node.js & Express**: High-performance server-side execution.
+- **MongoDB & Mongoose**: Flexible NoSQL database with schema-based modeling.
+- **Passport.js**: Robust authentication including Google OAuth 2.0.
 
-- **User Profile**
-  - Profile management
-  - Multiple address management
-  - Wallet system
-  - Transaction history
+### **External Services & Utilities**
+[![My Skills](https://skillicons.dev/icons?i=cloudinary,postman)](https://skillicons.dev)
+- **Razorpay**: Integrated secure payment gateway.
+- **Cloudinary**: Cloud-based image management and optimization.
+- **Nodemailer**: Automated transactional emails and OTP services.
+- **ExcelJS & PDFKit**: Professional report and invoice generation.
 
-### Admin Features
-- **Dashboard**
-  - Sales analytics
-  - Revenue tracking
-  - Order statistics
-  - Customer insights
-  - Export reports (PDF/Excel)
+---
 
-- **Product Management**
-  - Add/edit products
-  - Manage variants
-  - Toggle product availability
-  - Image management
-  - Inventory control
+## 📖 Description
 
-- **Order Management**
-  - Order processing
-  - Status updates
-  - Return management
-  - Cancel request handling
+**Glowly** is a state-of-the-art e-commerce ecosystem specifically tailored for the cosmetic industry. It provides a seamless shopping experience for users while offering a comprehensive management suite for administrators. From AI-ready image processing with Sharp to real-time analytics, Glowly is built with scalability and user experience at its core.
 
-- **Offer Management**
-  - Product-specific offers
-  - Coupon management
-  - Discount settings
+---
 
-## Technical Features
-- Responsive design for all devices
-- Real-time notifications using iziToast
-- Form validations
-- Secure payment processing
-- PDF generation for invoices and reports
-- Excel export for reports
-- Image optimization and storage
-- Error handling and logging
+## 🏗️ MVC Architecture Highlights
 
-## Technologies Used
-- **Frontend**
-  - HTML/CSS/JavaScript
-  - EJS templating
-  - Bootstrap
-  - jQuery
-  - Chart.js for analytics
+Glowly follows the **Model-View-Controller (MVC)** architectural pattern to ensure a clean separation of concerns, scalability, and ease of maintenance.
 
-- **Backend**
-  - Node.js
-  - Express.js
-  - MongoDB
-  - Passport.js for authentication
-  - Multer for file handling
-
-- **External Services**
-  - Razorpay payment gateway
-  - Google OAuth
-  - CDN for assets
-
-- **Libraries**
-  - SweetAlert2
-  - iziToast
-  - jsPDF
-  - XLSX
-  - Font Awesome
-
-## Security Features
-- JWT authentication
-- Password hashing
-- OTP verification
-- Protected routes
-- Input sanitization
-- CSRF protection
-- Secure payment handling
-
-## Installation & Setup
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Set up environment variables
-4. Configure database connection
-5. Start the server: `npm start`
-
-## Environment Variables
-```env
-PORT=3000
-MONGODB_URI=your_mongodb_uri
-JWT_SECRET=your_jwt_secret
-RAZORPAY_KEY_ID=your_razorpay_key
-RAZORPAY_SECRET=your_razorpay_secret
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
+```mermaid
+graph TD
+    A[Client Request] --> B[Routes]
+    B --> C[Middlewares]
+    C --> D[Controllers]
+    D --> E[Models]
+    E --> F[(MongoDB)]
+    D --> G[Views]
+    G --> H[Response]
 ```
 
-## Contributing
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a pull request
+-   **Models**: Define the structure of data (Users, Products, Orders) and interact with MongoDB.
+-   **Views**: The user interface, built using EJS templates and served dynamically.
+-   **Controllers**: The "brain" of the app. Processes requests, interacts with models, and returns views/data.
+-   **Middlewares**: Handle authentication, authorization, and error processing before reaching controllers.
 
-## License
-This project is licensed under the MIT License.
+---
 
-## Contact
-For support, email support@glowly.com
+## 🌟 Key Features
 
+### **👤 For Users**
+-   **Omnichannel Auth**: Login via Email/Password or Google OAuth with OTP verification.
+-   **Smart Shopping**: Advanced search, multi-category filtering, and product variants.
+-   **Checkout Flow**: Seamless Razorpay integration with wallet system and coupon support.
+-   **Account Hub**: Manage multiple addresses, track orders, and view transaction history.
+-   **Interactive UI**: Live notifications, image cropping for profiles, and mobile-responsive design.
+
+### **🛡️ For Admins**
+-   **Analytics Dashboard**: Visual representations of revenue, sales, and customer growth.
+-   **Inventory Command**: Full CRUD on products, brands, and categories with inventory alerts.
+-   **Dynamic Offers**: Create product-specific offers, referral rewards, and coupon codes.
+-   **Report Engine**: Export detailed sales reports in Excel and PDF formats.
+-   **Order Control**: Manage order statuses, return requests, and cancellations.
+
+---
+
+## 📁 Folder Structure
+
+```text
+glowly.com-2025/
+├── 📂 config/          # Database & Cloudinary configurations
+├── 📂 controllers/     # Request handling logic (The 'C' in MVC)
+├── 📂 helpers/         # Utility functions & helper methods
+├── 📂 middlewares/     # Auth & validation middlewares
+├── 📂 models/          # Mongoose schemas (The 'M' in MVC)
+├── 📂 public/          # Static assets (CSS, JS, Images)
+├── 📂 routes/          # Express route definitions
+├── 📂 views/           # EJS templates (The 'V' in MVC)
+├── 📄 server.js        # Application entry point
+└── 📄 package.json     # Project dependencies
+```
+
+---
+
+## 🔐 Security Highlights
+
+-   **Data Protection**: Password hashing using `bcrypt`.
+-   **Authentication**: Secure session management and JWT-based protection for APIs.
+-   **Payment Security**: Verified Razorpay integration with signature validation.
+-   **Safety First**: Input sanitization, CSRF protection, and route-level authorization.
+
+---
+
+## 🛠️ Installation & Setup
+
+1.  **Clone the Repo**
+    ```bash
+    git clone https://github.com/your-username/glowly.com.git
+    ```
+2.  **Install Dependencies**
+    ```bash
+    npm install
+    ```
+3.  **Configure Environment**
+    Create a `.env` file and add:
+    ```env
+    PORT=3000
+    MONGODB_URI=your_mongodb_uri
+    RAZORPAY_KEY_ID=your_key
+    RAZORPAY_SECRET=your_secret
+    CLOUDINARY_URL=your_url
+    ```
+4.  **Run Application**
+    ```bash
+    npm run dev
+    ```
+
+---
+
+<p align="center">
+  Made with ❤️ by the Glowly Team
+</p>
