@@ -41,8 +41,6 @@ app.use(session({
 
 cron.schedule("* * * * *",async () => {
     try {
-
-
       await resetCategoryOffer()
   
     } catch (error) {

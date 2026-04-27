@@ -1,9 +1,11 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import pkg from 'multer-storage-cloudinary';
 import multer from 'multer';
 import dotenv from 'dotenv';
 
 dotenv.config();
+
+const CloudinaryStorage = pkg.CloudinaryStorage || pkg;
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -12,7 +14,7 @@ cloudinary.config({
 });
 
 const storage = new CloudinaryStorage({
-  cloudinary,
+  cloudinary: cloudinary,
   params: {
     folder: 'products',
     allowedFormats: ['jpg', 'jpeg', 'png'],
@@ -33,7 +35,6 @@ const uploadImages = upload.fields([
   { name: 'variantImages_6', maxCount: 10 },
   { name: 'variantImages_7', maxCount: 10 },
   { name: 'variantImages_8', maxCount: 10 },
-
 ]);
 
 export { upload, uploadImages, cloudinary };
