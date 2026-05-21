@@ -528,7 +528,8 @@
           toastWarning("Error adding product to cart.");
         });
     } else {
-      window.location = '/login'
+      let currentPath = window.location.pathname + window.location.search;
+      window.location.href = '/login?redirect=' + encodeURIComponent(currentPath);
     }
   }
 

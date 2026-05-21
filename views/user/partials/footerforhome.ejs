@@ -111,3 +111,33 @@
  <!-- Custom Script -->
  <script src="/js/user.js"></script>
  <script src="/js/responsive.js"></script>
+
+<script>
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var msg = params.get('msg');
+    if (msg) {
+      iziToast.success({
+        message: msg,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  })();
+</script>
+
+<script>
+  (function() {
+    var loginLinks = document.querySelectorAll('a[href="/login"]');
+    var currentPath = window.location.pathname + window.location.search;
+    var redirect = encodeURIComponent(currentPath);
+    loginLinks.forEach(function(link) {
+      link.href = '/login?redirect=' + redirect;
+    });
+  })();
+</script>

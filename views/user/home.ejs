@@ -235,24 +235,6 @@
       position: 'bottomCenter',
     });
   };
-  const urlParams = new URLSearchParams(window.location.search);
-  const message = urlParams.get('msg');
-
-  if (message) {
-    iziToast.success({
-      message: message,
-      backgroundColor: '#0e932d',
-      messageColor: '#FFFFFF',
-      icon: 'fa fa-check',
-      iconColor: '#FFFFFF',
-      timeout: 1500,
-      position: 'topRight',
-    });
-
-    const newUrl = window.location.origin + window.location.pathname;
-    window.history.replaceState(null, '', newUrl);
-  }
-
   document.addEventListener("DOMContentLoaded", function() {
     const urlParams = new URLSearchParams(window.location.search);
     const isReferral = urlParams.get("isReferral");
