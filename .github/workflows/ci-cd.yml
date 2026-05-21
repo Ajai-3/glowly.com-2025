@@ -38,3 +38,26 @@ jobs:
           platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/glowly:latest
+            docker stop glowly-app || true
+            docker rm glowly-app || true
+            docker run -d \
+              --name glowly-app \
+              --restart unless-stopped \
+              -p 7000:7000 \
+              --env-file /home/${{ secrets.SSH_USERNAME }}/glowly/.env \
+              ${{ secrets.DOCKER_USERNAME }}/glowly:latest
+            docker image prune -f
