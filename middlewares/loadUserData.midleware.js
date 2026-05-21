@@ -6,6 +6,8 @@ import Wallet from "../models/wallet.model.js";
 import Product from "../models/product.model.js";
 import Category from "../models/category.model.js";
 import Wishlist from "../models/wishlist.model.js";
+import { StatusCodes } from "../constants/StatusCodes.js";
+import { USER_MESSAGES } from "../constants/userMessages.js";
 
 
 export const loadUserData = async (req, res, next) => {
@@ -50,13 +52,13 @@ export const loadUserData = async (req, res, next) => {
         });
       
         if (!categories) {
-          return next({ statusCode: 404, message: 'Categories not found' });
+          return next({ statusCode: StatusCodes.NOT_FOUND, message: USER_MESSAGES.CATEGORIES_NOT_FOUND });
         }
 
         let brands = await Brand.find({ isListed: true });
       
         if (!brands) {
-          return next({ statusCode: 404, message: 'Brands not found' });
+          return next({ statusCode: StatusCodes.NOT_FOUND, message: USER_MESSAGES.BRANDS_NOT_FOUND });
         }
 
         req.user = user;

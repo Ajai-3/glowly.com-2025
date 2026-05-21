@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 import User from "../../models/user.model.js";
 import Address from "../../models/address.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER MY ACCOUNT PAGE
@@ -14,12 +15,12 @@ export const renderMyAccountPage = async (req, res) => {
     const { user, token, brands, cartCount, categories } = req;
 
     if (!token) {
-      return res.redirect("/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     const activeUser = await User.findById({ _id: user.userId });
 
-    return res.render("user/my-account", {
+    return res.render(VIEWS.USER.MY_ACCOUNT, {
       name: user ? user.name : "",
       user: user,
       categories,
@@ -29,7 +30,7 @@ export const renderMyAccountPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in rendering my account", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -70,10 +71,10 @@ export const handleProfileUpdate = async (req, res) => {
 
     res.cookie("token", newToken, { httpOnly: true, secure: true });
 
-    res.redirect("/my-account");
+    res.redirect(ROUTES.USER.MY_ACCOUNT);
   } catch (error) {
     console.log("Error in update profile", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -87,7 +88,7 @@ export const renderManageAddressPage = async (req, res) => {
     const { user, token, brands, cartCount, categories } = req;
 
     if (!token) {
-      return res.redirect("/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     const addresses = await Address.find({
@@ -95,7 +96,7 @@ export const renderManageAddressPage = async (req, res) => {
       isActive: true,
     });
 
-    return res.render("user/manage-address", {
+    return res.render(VIEWS.USER.MANAGE_ADDRESS, {
       name: user ? user.name : "",
       user: user,
       brands,
@@ -106,7 +107,7 @@ export const renderManageAddressPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in rendering my account", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -119,7 +120,7 @@ export const handleAddAddress = async (req, res) => {
   try {
     const { user, token, brands, cartCount, categories } = req;
     if (!token) {
-      return res.redirect("/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     const {
@@ -146,7 +147,7 @@ export const handleAddAddress = async (req, res) => {
       isActive: true,
     });
     if (addressCount >= 4) {
-      return res.render("user/manage-address", {
+      return res.render(VIEWS.USER.MANAGE_ADDRESS, {
         name: user ? user.name : "",
         user: user,
         categories,
@@ -154,7 +155,7 @@ export const handleAddAddress = async (req, res) => {
         activeUser,
         cartCount,
         addresses: await Address.find({ user_id: user.userId, isActive: true }),
-        error: "You have reached the maximum number of active addresses.",
+        error: USER_MESSAGES.MAX_ADDRESSES_REACHED,
       });
     }
 
@@ -171,7 +172,7 @@ export const handleAddAddress = async (req, res) => {
     });
 
     if (existingAddress) {
-      return res.redirect("/manage-address");
+      return res.redirect(ROUTES.USER.MANAGE_ADDRESS);
     }
 
     const newAddress = new Address({
@@ -196,7 +197,7 @@ export const handleAddAddress = async (req, res) => {
       isActive: true,
     });
 
-    return res.render("user/manage-address", {
+    return res.render(VIEWS.USER.MANAGE_ADDRESS, {
       name: user ? user.name : "",
       user: user,
       categories,
@@ -207,7 +208,7 @@ export const handleAddAddress = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in adding new address", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -223,7 +224,7 @@ export const removeAddress = async (req, res) => {
     if (!user) {
       return res
         .status()
-        .json({ message: "Unauthorized access. Please log in." });
+        .json({ message: USER_MESSAGES.UNAUTHORIZED });
     }
 
     const addressId = req.params.addressId;
@@ -235,13 +236,13 @@ export const removeAddress = async (req, res) => {
     );
 
     if (!updatedAddress) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Address not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: USER_MESSAGES.ADDRESS_NOT_FOUND });
     }
 
-    res.status(StatusCodes.OK).json({ message: "Address deactivated successfully" });
+    res.status(StatusCodes.OK).json({ message: USER_MESSAGES.ADDRESS_DEACTIVATED });
   } catch (error) {
     console.error("Error in removing address:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Error deactivating address", error });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: USER_MESSAGES.ADDRESS_DEACTIVATE_ERROR, error });
   }
 };
 
@@ -254,17 +255,17 @@ export const editAddressPage = async (req, res) => {
   try {
     const { user, token, brands, cartCount, categories } = req;
     if (!token) {
-      return res.redirect("/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
     const { id } = req.params;
 
     const address = await Address.findById(id);
 
     if (!address) {
-      return res.status(StatusCodes.NOT_FOUND).send("Address not found");
+      return res.status(StatusCodes.NOT_FOUND).send(USER_MESSAGES.ADDRESS_NOT_FOUND);
     }
 
-    return res.render("user/edit-address.ejs", {
+    return res.render(VIEWS.USER.EDIT_ADDRESS, {
       cartCount,
       categories,
       address,
@@ -273,7 +274,7 @@ export const editAddressPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in edit address Page", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -299,7 +300,7 @@ export const updateAddress = async (req, res) => {
     });
 
     if (existingAddress) {
-      return res.status(StatusCodes.FORBIDDEN).json({ message: "This address already exists" });
+      return res.status(StatusCodes.FORBIDDEN).json({ message: USER_MESSAGES.ADDRESS_ALREADY_EXISTS });
     }
 
     const updatedAddress = await Address.findByIdAndUpdate(addressId, req.body, {
@@ -307,12 +308,12 @@ export const updateAddress = async (req, res) => {
     });
 
     if (!updatedAddress) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Address not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: USER_MESSAGES.ADDRESS_NOT_FOUND });
     }
 
-    res.status(StatusCodes.OK).json({ message: "Address updated successfully" });
+    res.status(StatusCodes.OK).json({ message: USER_MESSAGES.ADDRESS_UPDATED });
   } catch (error) {
     console.error("Error updating address:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: CATEGORY_MESSAGES.SERVER_ERROR });
   }
 };

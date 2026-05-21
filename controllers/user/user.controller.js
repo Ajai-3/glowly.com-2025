@@ -1,7 +1,7 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 dotenv.config();
 import {
   generateOTP,
@@ -9,11 +9,13 @@ import {
   sendOTPToUserEmail,
   generateReferralCode,
   sendResetPasswordEmail,
-} from "../../helpers/email.js";
-import User from "../../models/user.model.js";
-import Wallet from "../../models/wallet.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
-import Transaction from "../../models/transaction.model.js";
+} from '../../helpers/email.js';
+import User from '../../models/user.model.js';
+import Wallet from '../../models/wallet.model.js';
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
+import { USER_MESSAGES } from "../../constants/userMessages.js";
+import Transaction from '../../models/transaction.model.js';
 
 // ========================================================================================
 // RENDER LOGIN PAGE
@@ -23,7 +25,8 @@ import Transaction from "../../models/transaction.model.js";
 export const renderLoginPage = (req, res) => {
   const msg = req.session.msg || null;
   req.session.msg = null;
-  return res.render("user/login", { msg });
+  const redirect = req.query.redirect || null;
+  return res.render(VIEWS.USER.LOGIN, { msg, redirect });
 };
 // ========================================================================================
 // RENDER SIGNUP PAGE
@@ -32,7 +35,7 @@ export const renderLoginPage = (req, res) => {
 // ========================================================================================
 export const renderSignupPage = (req, res) => {
   const msg = req.session.msg || null;
-  return res.render("user/signup", { msg });
+  return res.render(VIEWS.USER.SIGNUP, { msg });
 };
 // ========================================================================================
 // RENDER OTP MESSAGE PAGE
@@ -40,7 +43,7 @@ export const renderSignupPage = (req, res) => {
 // Renders the page displaying the OTP message sent to the user for verification.
 // ========================================================================================
 export const renderOtpStatusPage = (req, res) => {
-  return res.render("user/otp-message");
+  return res.render(VIEWS.USER.OTP_MESSAGE);
 };
 // ========================================================================================
 // RENDER OTP VERIFICATION PAGE
@@ -48,7 +51,7 @@ export const renderOtpStatusPage = (req, res) => {
 // Renders the OTP verification page where the user enters the code sent to their device.
 // ========================================================================================
 export const renderpOtpVerificationPage = (req, res) => {
-  return res.render("user/otp-verification");
+  return res.render(VIEWS.USER.OTP_VERIFICATION);
 };
 // ========================================================================================
 // RENDER FORGOT PASSWORD PAGE
@@ -58,7 +61,7 @@ export const renderpOtpVerificationPage = (req, res) => {
 export const renderForgotPasswordPage = (req, res) => {
   const msg = req.session.msg || null;
   req.session.msg = null;
-  return res.render("user/forgot-password", { msg });
+  return res.render(VIEWS.USER.FORGOT_PASSWORD, { msg });
 };
 // ========================================================================================
 // RENDER NEW PASSWORD PAGE
@@ -69,7 +72,7 @@ export const renderForgotPasswordPage = (req, res) => {
 export const renderNewPasswordPage = async (req, res) => {
   try {
     const { code } = req.params;
-    let msg = "";
+    let msg = '';
 
     const user = await User.findOne({
       resetPasswordCode: code,
@@ -78,15 +81,15 @@ export const renderNewPasswordPage = async (req, res) => {
 
     if (!user) {
       req.session.msg = {
-        type: "error",
-        msg: "Reset link is expired or invalid.",
+        type: 'error',
+        msg: USER_MESSAGES.RESET_LINK_EXPIRED,
       };
-      return res.redirect("/login");
+      return res.redirect(ROUTES.USER.LOGIN);
     }
 
-    return res.render("user/new-password", { email: user.email, msg });
+    return res.render(VIEWS.USER.NEW_PASSWORD, { email: user.email, msg });
   } catch (error) {
-    console.log("Erorr rendering new password page", error);
+    console.log('Erorr rendering new password page', error);
   }
 };
 
@@ -104,7 +107,7 @@ const hashedPassword = async (password) => {
     const passwordHash = await bcrypt.hash(password, 10);
     return passwordHash;
   } catch (error) {
-    console.error("Error in password hashing", error);
+    console.error('Error in password hashing', error);
   }
 };
 
@@ -117,29 +120,30 @@ export const handleUserSignup = async (req, res) => {
   const { name, phone_no, email, password, repeatPassword } = req.body;
 
   try {
-    const referer = req.headers.referer || "";
-    
-    const baseURL = referer.includes("localhost") ? "http://localhost" : "https://glowly.ajaiii.tech";
+    const referer = req.headers.referer || '';
+
+    const baseURL = referer.includes('localhost')
+      ? 'http://localhost'
+      : 'https://glowly.ajaiii.tech';
     const urlParams = new URL(referer, baseURL).searchParams;
-    const referralCode = urlParams.get("referralCode") || null;
-    
-    
+    const referralCode = urlParams.get('referralCode') || null;
+
     const userExists = await User.findOne({ email });
     if (userExists) {
-      const msg = "User with this email already exists.";
-      return res.render("user/signup", { msg });
+      const msg = USER_MESSAGES.EMAIL_ALREADY_EXISTS;
+      return res.render(VIEWS.USER.SIGNUP, { msg });
     }
 
     const userPhoneNoExists = await User.findOne({ phone_no });
     if (userPhoneNoExists) {
-      const msg = "Phone number already in use.";
-      return res.render("user/signup", { msg });
+      const msg = USER_MESSAGES.PHONE_ALREADY_EXISTS;
+      return res.render(VIEWS.USER.SIGNUP, { msg });
     }
 
     // Check if the passwords match
     if (password !== repeatPassword) {
-      const msg = "Passwords do not match.";
-      return res.render("user/signup", { msg });
+      const msg = USER_MESSAGES.PASSWORDS_NOT_MATCH;
+      return res.render(VIEWS.USER.SIGNUP, { msg });
     }
 
     // Generate OTP and expiry time
@@ -149,19 +153,19 @@ export const handleUserSignup = async (req, res) => {
     req.session.otpExpiriy = expiryTime;
     req.session.userData = { name, phone_no, email, password, referralCode };
 
-    console.log("OTP", OTP);
+    console.log('OTP', OTP);
 
     // Send OTP to the user email
     const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
     if (!sendOTPEmail) {
-      const msg = "Error sending OTP to your email.";
-      return res.render("user/signup", { msg });
+      const msg = USER_MESSAGES.OTP_SEND_ERROR;
+      return res.render(VIEWS.USER.SIGNUP, { msg });
     }
 
-    return res.redirect("user/otp-message");
+    return res.redirect(ROUTES.USER.OTP_MESSAGE);
   } catch (error) {
-    console.error("Signup error", error);
-    res.redirect("/page-not-found");
+    console.error('Signup error', error);
+    res.redirect('/page-not-found');
   }
 };
 
@@ -175,8 +179,8 @@ export const handleOTPVerification = async (req, res) => {
   try {
     let isRefferal = false;
 
-    req.session.msg = "Successful Login now";
-    req.session.type = "success";
+    req.session.msg = 'Successful Login now';
+    req.session.type = 'success';
 
     const { otp } = req.body;
 
@@ -200,43 +204,46 @@ export const handleOTPVerification = async (req, res) => {
         balance: 0,
       });
 
-      await Promise.all([ newWallet.save(), saveUserData.save() ])
+      await Promise.all([newWallet.save(), saveUserData.save()]);
 
-      if (user.referralCode && user.referralCode !== "") {
-        const referrer = await User.findOne({ referralCode: user.referralCode });
-        console.log(referrer)
-      
+      if (user.referralCode && user.referralCode !== '') {
+        const referrer = await User.findOne({
+          referralCode: user.referralCode,
+        });
+        console.log(referrer);
+
         if (referrer) {
-
           isRefferal = true;
 
           saveUserData.referredBy = new mongoose.Types.ObjectId(referrer._id);
-      
+
           let referrerWallet = await Wallet.findOne({ user_id: referrer._id });
-          let newUserWallet = await Wallet.findOne({ user_id: saveUserData._id });
-      
+          let newUserWallet = await Wallet.findOne({
+            user_id: saveUserData._id,
+          });
+
           if (referrerWallet && newUserWallet) {
             const referralBonus = 100;
-      
+
             referrerWallet.balance += referralBonus;
             newUserWallet.balance += referralBonus;
-      
+
             const referrerTransaction = new Transaction({
               wallet_id: referrerWallet._id,
               user_id: referrer._id,
               amount: referralBonus,
-              type: "Credited",
-              description: "Referral bonus",
+              type: 'Credited',
+              description: 'Referral bonus',
             });
-      
+
             const newUserTransaction = new Transaction({
               wallet_id: newUserWallet._id,
               user_id: saveUserData._id,
               amount: referralBonus,
-              type: "Credited",
-              description: "Referral bonus",
+              type: 'Credited',
+              description: 'Referral bonus',
             });
-      
+
             await Promise.all([
               saveUserData.save(),
               referrerWallet.save(),
@@ -251,24 +258,26 @@ export const handleOTPVerification = async (req, res) => {
       const token = jwt.sign(
         { userId: saveUserData._id, name: saveUserData.name },
         process.env.JWT_SECRET_KEY,
-        { expiresIn: "1h" }
+        { expiresIn: '1h' },
       );
 
-      res.cookie("token", token, { httpOnly: true, secure: true });
+      res.cookie('token', token, { httpOnly: true, secure: true });
 
       return res.status(StatusCodes.OK).json({
         success: true,
-        message: "Signup Successful, login now!",
+        message: USER_MESSAGES.SIGNUP_SUCCESS,
         redirectUrl: `/home?isReferral=${isRefferal}`,
       });
     } else {
       res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, msg: "Invalid OTP Please try again." });
+        .json({ success: false, msg: USER_MESSAGES.INVALID_OTP });
     }
   } catch (error) {
-    console.error("Error in verifing OTP", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, msg: "An error occurs" });
+    console.error('Error in verifing OTP', error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ success: false, msg: USER_MESSAGES.AN_ERROR_OCCURS });
   }
 };
 
@@ -282,10 +291,10 @@ export const handleResendOTP = async (req, res) => {
     const user = req.session.userData;
 
     if (!user) {
-      console.error("User data not passed");
+      console.error('User data not passed');
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, msg: "User not authenticated." });
+        .json({ success: false, msg: USER_MESSAGES.USER_NOT_AUTHENTICATED });
     }
 
     const email = user.email;
@@ -298,26 +307,22 @@ export const handleResendOTP = async (req, res) => {
     const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
 
     if (!sendOTPEmail) {
-      console.error("Error sending OTP");
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({
-          success: false,
-          msg: "Error sending OTP. Please try again later.",
-        });
+      console.error('Error sending OTP');
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        msg: USER_MESSAGES.OTP_SEND_ERROR_RETRY,
+      });
     }
 
     return res
       .status(StatusCodes.OK)
-      .json({ success: true, msg: "OTP resent successfully." });
+      .json({ success: true, msg: USER_MESSAGES.OTP_RESENT });
   } catch (error) {
-    console.error("Error in resend OTP:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        msg: "Something went wrong, please try again later.",
-      });
+    console.error('Error in resend OTP:', error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      msg: USER_MESSAGES.SOMETHING_WENT_WRONG,
+    });
   }
 };
 
@@ -328,31 +333,33 @@ export const handleResendOTP = async (req, res) => {
 // ========================================================================================
 export const handleUserLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, redirect } = req.body;
+
+    const redirectPath = redirect || null;
 
     const referralCode = generateReferralCode();
-    
-    const user = await User.findOne({ email, role: "user" });
+
+    const user = await User.findOne({ email, role: 'user' });
     if (!user) {
-      const msg = { type: "error", msg: "User Not Found" };
-      return res.render("user/login", { msg });
+      const msg = { type: 'error', msg: USER_MESSAGES.USER_NOT_FOUND };
+      return res.render(VIEWS.USER.LOGIN, { msg, redirect: redirectPath });
     }
 
-    if (user.status === "blocked") {
-      const msg = { type: "error", msg: "Account blocked by Admin...!" };
-      return res.render("user/login", { msg });
+    if (user.status === 'blocked') {
+      const msg = { type: 'error', msg: USER_MESSAGES.ACCOUNT_BLOCKED };
+      return res.render(VIEWS.USER.LOGIN, { msg, redirect: redirectPath });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      const msg = { type: "error", msg: "Invalid Credential..!" };
-      return res.render("user/login", { msg });
+      const msg = { type: 'error', msg: USER_MESSAGES.INVALID_CREDENTIALS };
+      return res.render(VIEWS.USER.LOGIN, { msg, redirect: redirectPath });
     }
 
     if (!user.referralCode) {
       user.referralCode = referralCode;
-      await user.save(); 
+      await user.save();
     }
 
     const token = jwt.sign(
@@ -362,18 +369,24 @@ export const handleUserLogin = async (req, res) => {
         profilePic: user.profilePic || null,
       },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "7d" }
+      { expiresIn: '7d' },
     );
-    res.cookie("token", token, { httpOnly: true, secure: true });
+    res.cookie('token', token, { httpOnly: true, secure: true });
 
-    return res.redirect(`/home?msg=${encodeURIComponent("Login successful!")}`);
+    if (redirectPath) {
+      const sep = redirectPath.includes('?') ? '&' : '?';
+      return res.redirect(
+        `${redirectPath}${sep}msg=${encodeURIComponent(USER_MESSAGES.LOGIN_SUCCESS)}`,
+      );
+    }
+
+    return res.redirect(ROUTES.USER.HOME_ALT + `?msg=${encodeURIComponent(USER_MESSAGES.LOGIN_SUCCESS)}`);
   } catch (error) {
-    console.error("Login error", error);
-    const msg = { type: "error", msg: "Login Failed...Try again later" };
-    res.render("user/login", { msg });
+    console.error('Login error', error);
+    const msg = { type: 'error', msg: USER_MESSAGES.LOGIN_FAILED };
+    res.render(VIEWS.USER.LOGIN, { msg, redirect: req.body.redirect || null });
   }
 };
-
 
 // ========================================================================================
 // HANDLE THE LOGIN WITH GOOGLE ACCOUNT
@@ -382,13 +395,17 @@ export const handleUserLogin = async (req, res) => {
 // ========================================================================================
 export const googleCallbackHandler = async (req, res) => {
   try {
-    if (req.user.status === "blocked") {
+    if (req.user.status === 'blocked') {
       req.logout((err) => {
         if (err) {
-          console.error("Logout error:", err);
-          return res.status(StatusCodes.BAD_REQUEST).send("An error occurred during logout");
+          console.error('Logout error:', err);
+          return res
+            .status(StatusCodes.BAD_REQUEST)
+            .send('An error occurred during logout');
         }
-        return res.render("user/login", { msg: { type: "error", msg: "Account blocked by admin...!" } });
+        return res.render(VIEWS.USER.LOGIN, {
+          msg: { type: 'error', msg: USER_MESSAGES.ACCOUNT_BLOCKED },
+        });
       });
       return;
     }
@@ -404,11 +421,11 @@ export const googleCallbackHandler = async (req, res) => {
         googleId: req.user.googleId,
         referralCode: referralCode,
       });
-      console.log("User before saving:", user);
+      console.log('User before saving:', user);
 
       try {
         await user.save();
-        console.log("User saved successfully:", user);
+        console.log('User saved successfully:', user);
       } catch (err) {
         if (err.code === 11000) {
           user = await User.findOne({ email: req.user.email });
@@ -424,7 +441,7 @@ export const googleCallbackHandler = async (req, res) => {
       try {
         await user.save();
       } catch (err) {
-        console.error("Error updating user:", err);
+        console.error('Error updating user:', err);
       }
     }
 
@@ -440,16 +457,24 @@ export const googleCallbackHandler = async (req, res) => {
         profilePic: user.profilePic || null,
       },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "7d" }
+      { expiresIn: '7d' },
     );
 
-    res.cookie("token", token, { httpOnly: true, secure: true });
-    return res.redirect("/home");
+    res.cookie('token', token, { httpOnly: true, secure: true });
+
+    const redirectPath = req.session.redirectAfterLogin || null;
+    req.session.redirectAfterLogin = null;
+    if (redirectPath) {
+      const sep = redirectPath.includes('?') ? '&' : '?';
+      return res.redirect(
+        `${redirectPath}${sep}msg=${encodeURIComponent(USER_MESSAGES.LOGIN_SUCCESS)}`,
+      );
+    }
+    return res.redirect(ROUTES.USER.HOME_ALT + `?msg=${encodeURIComponent(USER_MESSAGES.LOGIN_SUCCESS)}`);
   } catch (error) {
-    return res.redirect("/user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
-
 
 // ========================================================================================
 // MANAGE PASSWORD RECOVERY
@@ -460,9 +485,9 @@ export const handleForgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const existUser = await User.findOne({ email, role: "user" });
+    const existUser = await User.findOne({ email, role: 'user' });
     if (!existUser) {
-      return res.json({ type: "error", msg: "No user found with this email." });
+      return res.json({ type: 'error', msg: USER_MESSAGES.NO_USER_EMAIL });
     }
 
     const resetCode = generateResetCode();
@@ -471,17 +496,29 @@ export const handleForgotPassword = async (req, res) => {
     existUser.resetPasswordExpires = expiryTime;
     await existUser.save();
 
-    const resetPasswordUrl = `${req.protocol}://${req.get("host")}/reset-password/${resetCode}`;
-    const sendResetEmail = await sendResetPasswordEmail(email, resetPasswordUrl);
+    const resetPasswordUrl = `${req.protocol}://${req.get('host')}/reset-password/${resetCode}`;
+    const sendResetEmail = await sendResetPasswordEmail(
+      email,
+      resetPasswordUrl,
+    );
 
     if (!sendResetEmail) {
-      return res.json({ type: "error", msg: "Error sending reset link to your email." });
+      return res.json({
+        type: 'error',
+        msg: USER_MESSAGES.RESET_LINK_ERROR,
+      });
     }
 
-    return res.json({ type: "success", msg: "Password reset link sent to your email." });
+    return res.json({
+      type: 'success',
+      msg: USER_MESSAGES.RESET_LINK_SENT,
+    });
   } catch (error) {
-    console.error("Error in forgot password", error);
-    return res.json({ type: "error", msg: "An error occurred. Please try again later." });
+    console.error('Error in forgot password', error);
+    return res.json({
+      type: 'error',
+      msg: USER_MESSAGES.AN_ERROR_OCCURRED,
+    });
   }
 };
 
@@ -495,15 +532,15 @@ export const handleResetPassword = async (req, res) => {
     const { email, password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
-      return res.render("user/new-password", {
+      return res.render(VIEWS.USER.NEW_PASSWORD, {
         email,
-        msg: "Passwords do not match",
+        msg: USER_MESSAGES.PASSWORDS_NOT_MATCH,
       });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.render("user/new-password", { email, msg: "User not found" });
+      return res.render(VIEWS.USER.NEW_PASSWORD, { email, msg: USER_MESSAGES.USER_NOT_FOUND });
     }
 
     const updatedPassword = await hashedPassword(password);
@@ -514,13 +551,13 @@ export const handleResetPassword = async (req, res) => {
     await user.save();
 
     req.session.msg = {
-      type: "success",
-      msg: "Password reset successful. Please log in.",
+      type: 'success',
+      msg: USER_MESSAGES.RESET_SUCCESS,
     };
-    return res.redirect("/user/login");
+    return res.redirect(ROUTES.USER.LOGIN);
   } catch (error) {
-    console.error("Error resetting password", error);
-    return res.redirect("user/page-404");
+    console.error('Error resetting password', error);
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 // ========================================================================================
@@ -530,10 +567,10 @@ export const handleResetPassword = async (req, res) => {
 // ========================================================================================
 export const pageNotFound = async (req, res) => {
   try {
-    return res.render("user/page-404");
+    return res.render(ROUTES.USER.PAGE_NOT_FOUND);
   } catch (error) {
-    console.error("Error in rendering page-not-found", error);
-    return res.redirect("user/page-404");
+    console.error('Error in rendering page-not-found', error);
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -547,14 +584,16 @@ export const handleUserLogout = async (req, res) => {
   try {
     req.session.destroy((err) => {
       if (err) {
-        console.error("Logout error:", err);
-        return res.status(StatusCodes.BAD_REQUEST).send("Error during logout");
+        console.error('Logout error:', err);
+        return res.status(StatusCodes.BAD_REQUEST).send(USER_MESSAGES.LOGOUT_ERROR);
       }
-      res.clearCookie("token");
-      return res.redirect("/home");
+      res.clearCookie('token');
+      return res.redirect(ROUTES.USER.HOME_ALT);
     });
   } catch (error) {
-    console.error("Unexpected error during logout:", error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server error during logout");
+    console.error('Unexpected error during logout:', error);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(USER_MESSAGES.LOGOUT_UNEXPECTED_ERROR);
   }
 };

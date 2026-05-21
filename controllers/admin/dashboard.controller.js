@@ -1,6 +1,7 @@
 import User from "../../models/user.model.js";
 import Order from "../../models/order.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER SALES REPORT ON DASHBOARD
@@ -211,11 +212,10 @@ export const renderDashboardPage = async (req, res) => {
         orders: record.count,
       }));
     }
-
     const userCount = await User.countDocuments({ role: "user" });
     const totalPages = Math.ceil(totals.totalSales / limit);
 
-    return res.render("admin/dashboard", {
+    return res.render(VIEWS.ADMIN.DASHBOARD, {
       salesData,
       userCount,
       totalSalesCount: totals.totalSales,
@@ -234,7 +234,7 @@ export const renderDashboardPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching sales data:", error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CART_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -368,6 +368,6 @@ export const salesData = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching all sales data:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CART_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };

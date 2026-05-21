@@ -1,7 +1,9 @@
 import cron from "node-cron";
 import User from "../../models/user.model.js";
 import Coupon from "../../models/coupon.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { COUPON_MESSAGES } from "../../constants/couponMessages.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER COUPONS PAGE
@@ -29,7 +31,7 @@ export const renderCouponsPage = async (req, res) => {
     const totalPages = Math.ceil(totalCoupons / limit);
     const discountTypes = await Coupon.distinct("type");
 
-    return res.render("admin/coupons", {
+    return res.render(VIEWS.ADMIN.COUPONS, {
       coupons,
       discountTypes,
       currentPage: parseInt(page, 10),
@@ -40,7 +42,7 @@ export const renderCouponsPage = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Error rendering coupons page.");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(COUPON_MESSAGES.RENDER_PAGE_ERROR);
   }
 };
 // ========================================================================================
@@ -78,11 +80,11 @@ export const addCoupon = async (req, res) => {
 
     return res.status(StatusCodes.CREATED).json({
       success: true,
-      message: "Coupon added successfully!",
+      message: COUPON_MESSAGES.COUPON_ADDED,
     });
   } catch (error) {
     console.error(error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Error saving the coupon.");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(COUPON_MESSAGES.SAVE_ERROR);
   }
 };
 
@@ -132,17 +134,17 @@ export const removeCoupon = async (req, res) => {
     if (!coupon) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Coupon not found" });
+        .json({ success: false, message: COUPON_MESSAGES.COUPON_NOT_FOUND });
     }
     coupon.isDelete = true;
 
     await coupon.save();
     return res
       .status(StatusCodes.OK)
-      .json({ success: true, message: "Coupon deleted successfully." });
+      .json({ success: true, message: COUPON_MESSAGES.COUPON_DELETED });
   } catch (error) {
     console.error("Error in deleting coupon", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: COUPON_MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -161,16 +163,16 @@ export const restoreCoupon = async (req, res) => {
     if (!coupon) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Coupon not found" });
+        .json({ success: false, message: COUPON_MESSAGES.COUPON_NOT_FOUND });
     }
     coupon.isDelete = false;
 
     await coupon.save();
     return res
       .status(StatusCodes.OK)
-      .json({ success: true, message: "Coupon restored successfully." });
+      .json({ success: true, message: COUPON_MESSAGES.COUPON_RESTORED });
   } catch (error) {
     console.error("Error in restoring coupon", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: COUPON_MESSAGES.SERVER_ERROR });
   }
 };

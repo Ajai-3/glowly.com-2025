@@ -3,7 +3,10 @@ import path from "path";
 import { fileURLToPath } from "url";
 import Brand from "../../models/brand.model.js";
 import User from "../../models/user.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { BRAND_MESSAGES } from "../../constants/brandMessages.js";
+import { CART_MESSAGES } from "../../constants/cartMessages.js";
+import { VIEWS } from "../../constants/routes.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -44,7 +47,7 @@ export const renderBrandPage = async (req, res) => {
     const totalPages = Math.ceil(totalBrands / limit);
     const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
-    return res.render("admin/brands", {
+    return res.render(VIEWS.ADMIN.BRANDS, {
       brands,
       currentPage: page,
       totalPages: totalPages,
@@ -54,7 +57,7 @@ export const renderBrandPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error rendering brands page:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("An error occurred while rendering the brands page.");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(BRAND_MESSAGES.RENDER_PAGE_ERROR);
   }
 };
 // ========================================================================================
@@ -79,7 +82,7 @@ export const topBrands = async (req, res) => {
     res.json(topBrands);
   } catch (error) {
     console.error("Error fetching top brands:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CART_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -93,14 +96,14 @@ export const topBrands = async (req, res) => {
 export const renderAddBrandPage = async (req, res) => {
   try {
     const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
-    return res.render("admin/add-new-brand", {
+    return res.render(VIEWS.ADMIN.ADD_BRAND, {
       admin,
     });
   } catch (error) {
     console.error("Error rendering add brand page:", error);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send("An error occurred while loading the add brand page.");
+      .send(BRAND_MESSAGES.LOAD_PAGE_ERROR);
   }
 };
 
@@ -116,10 +119,10 @@ export const addBrand = async (req, res) => {
     const image = req.file?.filename;
 
     if (!name) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Brand name is required." });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: BRAND_MESSAGES.BRAND_NAME_REQUIRED });
     }
     if (!image) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Image is required." });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: BRAND_MESSAGES.IMAGE_REQUIRED });
     }
 
     const findBrand = await Brand.findOne({ brandName: name });
@@ -127,7 +130,7 @@ export const addBrand = async (req, res) => {
     if (findBrand) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Brand with this name already exists." });
+        .json({ message: BRAND_MESSAGES.BRAND_EXISTS });
     }
 
     const newBrand = new Brand({
@@ -139,12 +142,12 @@ export const addBrand = async (req, res) => {
 
     await newBrand.save();
 
-    return res.status(StatusCodes.OK).json({ message: "Brand added successfully!" });
+    return res.status(StatusCodes.OK).json({ message: BRAND_MESSAGES.BRAND_ADDED });
   } catch (error) {
     console.error("Error in adding brand:", error);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: "An error occurred while adding the brand." });
+      .json({ message: BRAND_MESSAGES.BRAND_ADD_ERROR });
   }
 };
 
@@ -164,10 +167,10 @@ export const renderEditBrandPage = async (req, res) => {
       return res.status(StatusCodes.NOT_FOUND).send("Brand not found");
     }
 
-    res.render("admin/edit-brand", { brand, admin });
+    res.render(VIEWS.ADMIN.EDIT_BRAND, { brand, admin });
   } catch (error) {
     console.error(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(BRAND_MESSAGES.SERVER_ERROR);
   }
 };
 
@@ -212,13 +215,13 @@ export const editBrand = async (req, res) => {
     );
 
     if (updatedBrand) {
-      return res.status(StatusCodes.OK).json({ message: "Brand updated successfully!" });
+      return res.status(StatusCodes.OK).json({ message: BRAND_MESSAGES.BRAND_UPDATED });
     } else {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Brand not found." });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: BRAND_MESSAGES.BRAND_NOT_FOUND });
     }
   } catch (error) {
     console.error(error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server Error" });
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: BRAND_MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -237,7 +240,7 @@ export const toggleBrand = async (req, res) => {
     if (!brand) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Brand not found." });
+        .json({ success: false, message: BRAND_MESSAGES.BRAND_NOT_FOUND });
     }
 
     brand.isListed = !brand.isListed;
@@ -256,6 +259,6 @@ export const toggleBrand = async (req, res) => {
     });
   } catch (error) {
     console.error("Error toggling list/restore brand:", error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server Error" });
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: BRAND_MESSAGES.SERVER_ERROR });
   }
 };

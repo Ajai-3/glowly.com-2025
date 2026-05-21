@@ -9,8 +9,12 @@ import Wallet from "../../models/wallet.model.js";
 import Coupon from "../../models/coupon.model.js";
 import Address from "../../models/address.model.js";
 import Product from "../../models/product.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
 import Transaction from "../../models/transaction.model.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
+import { CART_MESSAGES } from "../../constants/cartMessages.js";
+import { USER_MESSAGES } from "../../constants/userMessages.js";
+import { ORDER_MESSAGES } from "../../constants/orderMessages.js";
 
 // ========================================================================================
 // RENDER CHECKOUT PAGE
@@ -22,7 +26,7 @@ export const renderCheckoutPage = async (req, res, next) => {
   try {
     const { user, cart, cartCount, token, categories } = req;
     if (!token) {
-      return res.redirect("user/login");
+      return res.redirect(ROUTES.USER.LOGIN);
     }
 
     const products = await Product.find({ isDeleted: false });
@@ -70,11 +74,11 @@ export const renderCheckoutPage = async (req, res, next) => {
 
     if (validCartProducts.length === 0) {
       return res.redirect(
-        "/user/my-cart?message=Product+not+found&success=false"
+        ROUTES.USER.MY_CART + "?message=Product+not+found&success=false"
       );
     }
 
-    return res.render("user/checkout", {
+    return res.render(VIEWS.USER.CHECKOUT, {
       user: user,
       categories,
       addresses,
@@ -102,7 +106,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
     const { quantity, productId, variantId } = req.query;
 
     if (!token) {
-      return res.redirect("user/login");
+      return res.redirect(ROUTES.USER.LOGIN);
     }
 
     let coupons = await Coupon.find({ isDelete: false, isActive: true }).sort({
@@ -119,7 +123,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
     if (!productId || !variantId || !quantity) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: "Product ID and quantity are required.",
+        message: ORDER_MESSAGES.BUY_NOW_REQUIRED,
       });
     }
 
@@ -136,7 +140,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
 
     if (!cartProduct) {
       return res.redirect(
-        "/user/my-cart?message=Product+not+found&success=false"
+        ROUTES.USER.MY_CART + "?message=Product+not+found&success=false"
       );
     }
 
@@ -144,7 +148,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
 
     if (!productDetails) {
       return res.redirect(
-        "/user/my-cart?message=Product+not+found&success=false"
+        ROUTES.USER.MY_CART + "?message=Product+not+found&success=false"
       );
     }
 
@@ -158,7 +162,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
       cartProduct.quantity > variantDetails.stockQuantity
     ) {
       return res.redirect(
-        "/user/my-cart?message=Variant+not+available&success=false"
+        ROUTES.USER.MY_CART + "?message=Variant+not+available&success=false"
       );
     }
 
@@ -170,7 +174,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
       },
     ];
 
-    return res.render("user/checkout", {
+    return res.render(VIEWS.USER.CHECKOUT, {
       user: user,
       categories,
       addresses,
@@ -182,7 +186,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
     });
   } catch (error) {
     console.error("Error rendering checkout page:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -207,7 +211,7 @@ export const placeOrder = async (req, res) => {
     if (!token) {
       return res
         .status(StatusCodes.UNAUTHORIZED)
-        .json({ success: false, message: "User not authenticated." });
+        .json({ success: false, message: USER_MESSAGES.USER_NOT_AUTHENTICATED });
     }
 
     if (
@@ -218,21 +222,21 @@ export const placeOrder = async (req, res) => {
     ) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, message: "Missing required fields." });
+        .json({ success: false, message: ORDER_MESSAGES.MISSING_FIELDS });
     }
 
     const userData = await User.findById(user.userId);
     if (!userData) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "User not found." });
+        .json({ success: false, message: USER_MESSAGES.USER_NOT_FOUND });
     }
 
     const address = await Address.findById(address_id);
     if (!address) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Address not found." });
+        .json({ success: false, message: USER_MESSAGES.ADDRESS_NOT_FOUND });
     }
 
     const products = [];
@@ -241,7 +245,7 @@ export const placeOrder = async (req, res) => {
       if (!product) {
         return res
           .status(StatusCodes.NOT_FOUND)
-          .json({ success: false, message: `Product not found` });
+          .json({ success: false, message: CART_MESSAGES.PRODUCT_NOT_FOUND });
       }
 
       const variant = product.variants.find(
@@ -250,7 +254,7 @@ export const placeOrder = async (req, res) => {
       if (!variant || variant.stockQuantity < cartItem.quantity) {
         return res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ success: false, message: `Insufficient stock for variant` });
+          .json({ success: false, message: ORDER_MESSAGES.INSUFFICIENT_STOCK });
       }
 
       products.push({
@@ -283,7 +287,7 @@ export const placeOrder = async (req, res) => {
       if (!wallet || wallet.balance < grandTotal) {
         return res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ success: false, message: "Insufficient wallet balance." });
+          .json({ success: false, message: ORDER_MESSAGES.INSUFFICIENT_WALLET });
       }
 
       wallet.balance -= grandTotal;
@@ -310,7 +314,7 @@ export const placeOrder = async (req, res) => {
         .status(StatusCodes.OK)
         .json({
           success: true,
-          message: "Order placed successfully using wallet!",
+          message: ORDER_MESSAGES.PLACE_SUCCESS_WALLET,
           order,
         });
     } else if (payment_method === "razorpay") {
@@ -366,19 +370,19 @@ export const placeOrder = async (req, res) => {
         .status(StatusCodes.CREATED)
         .json({
           success: true,
-          message: "Order placed successfully with cash on delivery!",
+          message: ORDER_MESSAGES.PLACE_SUCCESS_COD,
           order,
         });
     } else {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, message: "Invalid payment method." });
+        .json({ success: false, message: ORDER_MESSAGES.INVALID_PAYMENT_METHOD });
     }
   } catch (error) {
     console.error("Error in place order:", error);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ success: false, message: "Internal server error." });
+      .json({ success: false, message: ORDER_MESSAGES.INTERNAL_ERROR });
   }
 };
 
@@ -395,7 +399,7 @@ export const paymentRetry = async (req, res, next) => {
     if (!orderId) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, message: "Order ID is required" });
+        .json({ success: false, message: ORDER_MESSAGES.ORDER_ID_REQUIRED });
     }
 
     const order = await Order.findById(orderId).populate({
@@ -408,7 +412,7 @@ export const paymentRetry = async (req, res, next) => {
     if (!order) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Order not found" });
+        .json({ success: false, message: ORDER_MESSAGES.ORDER_NOT_FOUND });
     }
 
     if (order.payment_status === "Payment completed") {
@@ -416,7 +420,7 @@ export const paymentRetry = async (req, res, next) => {
         .status(StatusCodes.BAD_REQUEST)
         .json({
           success: false,
-          message: "Payment is already completed for this order",
+          message: ORDER_MESSAGES.PAYMENT_ALREADY_COMPLETED,
         });
     }
 
@@ -426,7 +430,7 @@ export const paymentRetry = async (req, res, next) => {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message:
-          "Payment retry is only available for failed or pending payments",
+          ORDER_MESSAGES.RETRY_NOT_AVAILABLE,
       });
     }
 
@@ -454,9 +458,7 @@ export const paymentRetry = async (req, res, next) => {
     if (unavailableProducts.length > 0) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: `The following products are out of stock: ${unavailableProducts.join(
-          ", "
-        )}`,
+        message: ORDER_MESSAGES.OUT_OF_STOCK_PRODUCTS(unavailableProducts.join(", ")),
       });
     }
 
@@ -492,12 +494,12 @@ export const paymentRetry = async (req, res, next) => {
     if (error.code === "BAD_REQUEST_ERROR") {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: "Invalid request to payment gateway",
+        message: ORDER_MESSAGES.INVALID_GATEWAY_REQUEST,
       });
     }
     next({
       statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
-      message: "Failed to process payment retry. Please try again.",
+      message: ORDER_MESSAGES.RETRY_FAILED,
     });
   }
 };
@@ -520,7 +522,7 @@ export const verifyRazorpayPayment = async (req, res) => {
     if (generated_signature !== razorpay_signature) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, message: "Invalid Razorpay signature." });
+        .json({ success: false, message: ORDER_MESSAGES.INVALID_SIGNATURE });
     }
 
     const order = await Order.findOne({ razorpay_order_id });
@@ -538,17 +540,17 @@ export const verifyRazorpayPayment = async (req, res) => {
         .status(StatusCodes.OK)
         .json({
           success: true,
-          message: "Payment verified and order placed successfully!",
+          message: ORDER_MESSAGES.VERIFY_SUCCESS,
         });
     } else {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Order not found." });
+        .json({ success: false, message: ORDER_MESSAGES.ORDER_NOT_FOUND });
     }
   } catch (error) {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ success: false, message: "Internal server error." });
+      .json({ success: false, message: ORDER_MESSAGES.INTERNAL_ERROR });
   }
 };
 
@@ -626,7 +628,7 @@ export const verifyCoupon = async (req, res) => {
     if (!token) {
       return res
         .status(StatusCodes.UNAUTHORIZED)
-        .json({ success: false, message: "User not authenticated." });
+        .json({ success: false, message: USER_MESSAGES.USER_NOT_AUTHENTICATED });
     }
 
     const getCoupon = await Coupon.findOne({ code: coupon, isDelete: false });
@@ -636,7 +638,7 @@ export const verifyCoupon = async (req, res) => {
         .status(StatusCodes.NOT_FOUND)
         .json({
           sucess: false,
-          message: "This coupon has expired or is invalid.",
+          message: ORDER_MESSAGES.COUPON_EXPIRED,
         });
     }
     if (!getCoupon) {
@@ -644,7 +646,7 @@ export const verifyCoupon = async (req, res) => {
         .status(StatusCodes.NOT_FOUND)
         .json({
           success: false,
-          message: "This coupon has expired or is invalid.",
+          message: ORDER_MESSAGES.COUPON_EXPIRED,
         });
     }
 
@@ -662,13 +664,13 @@ export const verifyCoupon = async (req, res) => {
           .status(StatusCodes.BAD_REQUEST)
           .json({
             success: false,
-            message: "You have reached the usage limit for this coupon.",
+            message: ORDER_MESSAGES.COUPON_LIMIT_REACHED,
           });
       }
 
       return res.status(StatusCodes.OK).json({
         success: true,
-        message: "Coupon applied successfully.",
+        message: ORDER_MESSAGES.COUPON_APPLIED,
         discountValue: getCoupon.discountValue,
         discountType: getCoupon.type,
         coupon_id: getCoupon._id,
@@ -678,7 +680,7 @@ export const verifyCoupon = async (req, res) => {
         .status(StatusCodes.BAD_REQUEST)
         .json({
           success: false,
-          message: "This coupon does not meet the requirements.",
+          message: ORDER_MESSAGES.COUPON_REQ_NOT_MET,
         });
     }
   } catch (error) {

@@ -2,7 +2,9 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 import User from "../../models/user.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { ADMIN_MESSAGES } from "../../constants/adminMessages.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER SETTINGS PAGE (ADMIN PROFILE UPDATE)
@@ -12,10 +14,10 @@ import { StatusCodes } from "../../helpers/StatusCodes.js";
 export const renderSettingsPage = async (req, res) => {
   try {
     const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
-    return res.render("admin/settings", { admin });
+    return res.render(VIEWS.ADMIN.SETTINGS, { admin });
   } catch (error) {
     console.error("Settings page error:", error);
-    return res.redirect("/admin/login");
+    return res.redirect(ROUTES.ADMIN.LOGIN);
   }
 };
 
@@ -47,13 +49,13 @@ export const updateAdminProfile = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Profile updated successfully",
+      message: ADMIN_MESSAGES.PROFILE_UPDATED,
     });
   } catch (error) {
     console.error("Update profile error:", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: error.message || "Error updating profile",
+      message: error.message || ADMIN_MESSAGES.PROFILE_UPDATE_ERROR,
     });
   }
 };

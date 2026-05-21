@@ -3,8 +3,9 @@ import dotenv from "dotenv";
 dotenv.config();
 import razorpay from "../../config/razorpay.js";
 import Wallet from "../../models/wallet.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
 import Transaction from "../../models/transaction.model.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER MY WALLET PAGE
@@ -17,7 +18,7 @@ export const myWallet = async (req, res) => {
     const { user, brands, token, wallet, cartCount, categories } = req;
 
     if (!token) {
-      return res.redirect("/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     const { page = 1, limit = 10, type } = req.query;
@@ -42,7 +43,7 @@ export const myWallet = async (req, res) => {
       totalTransactions = await Transaction.countDocuments(query);
     }
 
-    return res.render("user/my-wallet", {
+    return res.render(VIEWS.USER.MY_WALLET, {
       user,
       name: user ? user.name : "",
       cartCount,
@@ -58,7 +59,7 @@ export const myWallet = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in myWallet:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -73,7 +74,7 @@ export const addMoneyToWallet = async (req, res) => {
     const { user, token, wallet } = req;
 
     if (!token) {
-      return res.redirect("/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     const {
@@ -143,6 +144,6 @@ export const addMoneyToWallet = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in addMoney to wallet", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };

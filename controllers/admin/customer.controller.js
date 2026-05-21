@@ -1,5 +1,7 @@
 import User from "../../models/user.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { USER_MESSAGES } from "../../constants/userMessages.js";
+import { VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER USERS PAGE
@@ -52,7 +54,7 @@ export const renderUsersPage = async (req, res) => {
 
     const totalPages = Math.ceil(totalUsers / perPage);
 
-    return res.render("admin/users", {
+    return res.render(VIEWS.ADMIN.USERS, {
       users,
       currentPage: page,
       totalPages,
@@ -81,7 +83,7 @@ export const blockUser = async (req, res) => {
   if (!userId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ success: false, message: "User ID is required." });
+      .json({ success: false, message: USER_MESSAGES.USER_ID_REQUIRED });
   }
 
   try {
@@ -89,7 +91,7 @@ export const blockUser = async (req, res) => {
     if (!user) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "User not found." });
+        .json({ success: false, message: USER_MESSAGES.USER_NOT_FOUND });
     }
 
     user.status = "blocked";
@@ -120,7 +122,7 @@ export const unBlockUser = async (req, res) => {
   if (!userId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ success: false, message: "User ID is required." });
+      .json({ success: false, message: USER_MESSAGES.USER_ID_REQUIRED });
   }
 
   try {
@@ -128,7 +130,7 @@ export const unBlockUser = async (req, res) => {
     if (!user) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "User not found." });
+        .json({ success: false, message: USER_MESSAGES.USER_NOT_FOUND });
     }
 
     user.status = "active";

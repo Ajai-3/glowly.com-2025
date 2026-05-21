@@ -1,8 +1,9 @@
 import Order from "../../models/order.model.js";
 import Review from "../../models/review.model.js";
 import Product from "../../models/product.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
 import Transaction from "../../models/transaction.model.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER ORDER LIST PAGE
@@ -14,7 +15,7 @@ export const renderOrderListPage = async (req, res) => {
     const { user, token, brands, cartCount, categories } = req;
     const PAGE_SIZE = 6;
     if (!token) {
-      return res.redirect("/user/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
     const currentPage = parseInt(req.query.page) || 1;
 
@@ -38,7 +39,7 @@ export const renderOrderListPage = async (req, res) => {
 
     const paginatedOrders = allOrders.slice(startIndex, endIndex);
 
-    return res.render("user/my-orders", {
+    return res.render(VIEWS.USER.MY_ORDERS, {
       user,
       brands,
       categories,
@@ -49,7 +50,7 @@ export const renderOrderListPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in rendering order list:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -63,32 +64,32 @@ export const cancelOrder = async (req, res) => {
     const { token, user, wallet } = req;
     const { orderId, productId, variantId, quantity } = req.body;
     if (!token) {
-      return res.redirect("user/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     if (!productId || !variantId || !orderId || !quantity) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Missing data." });
+      return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: ORDER_MESSAGES.MISSING_DATA });
     }
 
     const product = await Product.findById(productId);
     if (!product) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Product not found." });
+        .json({ success: false, message: ORDER_MESSAGES.PRODUCT_NOT_FOUND });
     }
 
     const variant = await product.variants.id(variantId);
     if (!variant) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Product variant is missing." });
+        .json({ success: false, message: ORDER_MESSAGES.VARIANT_MISSING });
     }
 
     const order = await Order.findById(orderId);
     if (!order) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Order list not found." });
+        .json({ success: false, message: ORDER_MESSAGES.ORDER_LIST_NOT_FOUND });
     }
 
     const productInOrder = order.products.find(
@@ -99,7 +100,7 @@ export const cancelOrder = async (req, res) => {
     if (!productInOrder) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Product not found in the order." });
+        .json({ success: false, message: ORDER_MESSAGES.PRODUCT_NOT_IN_ORDER });
     }
 
     if (
@@ -131,10 +132,10 @@ export const cancelOrder = async (req, res) => {
 
     res
       .status(StatusCodes.OK)
-      .json({ success: true, message: "Order canceled successfully" });
+      .json({ success: true, message: ORDER_MESSAGES.CANCEL_SUCCESS });
   } catch (error) {
     console.error("Error canceling order:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -149,26 +150,26 @@ export const returnOrder = async (req, res) => {
     const { orderId, productId, variantId, quantity } = req.body;
 
     if (!token) {
-      return res.redirect("user/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     if (!productId || !variantId || !orderId || !quantity) {
-      return res.status(400).json({ success: false, message: "Missing data." });
+return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: ORDER_MESSAGES.MISSING_DATA });
     }
 
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found." });
+      return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: ORDER_MESSAGES.PRODUCT_NOT_FOUND });
     }
 
     const variant = await product.variants.id(variantId);
     if (!variant) {
-      return res.status(404).json({ success: false, message: "Product variant is missing." });
+      return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: ORDER_MESSAGES.VARIANT_MISSING });
     }
 
     const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order list not found." });
+      return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: ORDER_MESSAGES.ORDER_LIST_NOT_FOUND });
     }
 
     const productInOrder = order.products.find(
@@ -176,17 +177,15 @@ export const returnOrder = async (req, res) => {
         item.product_id.toString() === productId &&
         item.variant_id.toString() === variantId
     );
-
     if (!productInOrder) {
-      return res.status(404).json({ success: false, message: "Product not found in the order." });
+      return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: ORDER_MESSAGES.PRODUCT_NOT_IN_ORDER });
     }
 
-    console.log(order)
-
-    if (!productInOrder.delivered_at) {
-      return res.status(400).json({
+    const addressId = order.address_id;
+    if (!addressId) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: "Cannot process return. No delivery date found for this order.",
+        message: ORDER_MESSAGES.RETURN_NO_DELIVERY_DATE,
       });
     }
 
@@ -195,9 +194,9 @@ export const returnOrder = async (req, res) => {
     const diffInDays = Math.floor((currentDate - deliveredAt) / (1000 * 60 * 60 * 24)); 
 
     if (diffInDays > 7) {
-      return res.status(400).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: "Return request denied. You can only return orders within 7 days of delivery.",
+        message: ORDER_MESSAGES.RETURN_DENIED_7_DAYS,
       });
     }
 
@@ -206,10 +205,10 @@ export const returnOrder = async (req, res) => {
 
     await order.save();
 
-    res.status(200).json({ success: true, message: "Order return request sent successfully" });
+    res.status(StatusCodes.OK).json({ success: true, message: ORDER_MESSAGES.RETURN_REQUEST_SENT });
   } catch (error) {
     console.error("Error canceling order:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -225,7 +224,7 @@ export const orderDetailsPage = async (req, res) => {
     const { user, brands, token, cartCount, categories } = req;
     const { orderId, productId, variantId } = req.params;
     if (!token) {
-      return res.redirect("/user/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     const review = await Review.findOne({
@@ -243,7 +242,7 @@ export const orderDetailsPage = async (req, res) => {
       .populate("address_id");
 
     if (!order) {
-      return res.redirect("/user/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     const product = order.products.find(
@@ -255,20 +254,20 @@ export const orderDetailsPage = async (req, res) => {
     );
 
     if (!product) {
-      return res.redirect("/user/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     const variant = product.product_id.variants.find(
       (v) => v._id.toString() === variantId
     );
     if (!variant) {
-      return res.redirect("/user/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     const address = order.address_id;
     const productStatus = product.status || "Unknown";
 
-    return res.render("user/order-details", {
+    return res.render(VIEWS.USER.ORDER_DETAILS, {
       user,
       categories,
       review,
@@ -283,6 +282,6 @@ export const orderDetailsPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in product detail page:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };

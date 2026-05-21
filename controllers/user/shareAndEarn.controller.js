@@ -1,13 +1,15 @@
 import mongoose from "mongoose";
 import User from "../../models/user.model.js";
 import Wallet from "../../models/wallet.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js"
+import { StatusCodes } from "../../constants/StatusCodes.js";
 import Transaction from "../../models/transaction.model.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
+import { USER_MESSAGES } from "../../constants/userMessages.js";
 
 // ========================================================================================
 // SHARE & EARN PAGE CONTROLLER
 // ========================================================================================
-// Renders the "Share & Earn" page where users can invite others, earn rewards, 
+// Renders the "Share & Earn" page where users can invite others, earn rewards,
 // and track their referral bonuses.
 // ========================================================================================
 export const shareAndEarn = async (req, res) => {
@@ -15,12 +17,12 @@ export const shareAndEarn = async (req, res) => {
         const { user, brands, token, wallet, cartCount, categories } = req;
 
         if (!token) {
-            return res.redirect("/home");
+            return res.redirect(ROUTES.USER.HOME_ALT);
         }
-        
+
         const userData = await User.findById({ _id: user.userId })
 
-        return res.render("user/shareAndEarn", {
+        return res.render(VIEWS.USER.SHARE_EARN, {
             user,
             name: user ? user.name : "",
             userData,
@@ -31,7 +33,7 @@ export const shareAndEarn = async (req, res) => {
         });
     } catch (error) {
         console.error("Error rendering Share & Earn page:", error);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CART_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -49,16 +51,16 @@ export const redeemReferral = async (req, res) => {
 
         const userIndb = await User.findOne({ referralCode: code });
         if (!userIndb) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Invalid referral code" });
+            return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: USER_MESSAGES.INVALID_REFERRAL_CODE });
         }
 
         if (user.userId.toString() === userIndb._id.toString()) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "You cannot enter your own Reffreal code. " });
+            return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: USER_MESSAGES.OWN_REFERRAL_CODE });
         }
 
         const currentUser = await User.findById({ _id: user.userId })
         if (currentUser.referredBy) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Referral bonus already claimed." });
+            return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: USER_MESSAGES.REFERRAL_ALREADY_CLAIMED });
         }
 
         if (user.userId.toString() !== userIndb._id.toString()) {
@@ -115,6 +117,6 @@ export const redeemReferral = async (req, res) => {
         
     } catch (error) {
         console.error("Error redeeming referral code:", error);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json("Internal Server Error");
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(CART_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 }

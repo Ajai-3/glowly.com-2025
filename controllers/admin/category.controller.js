@@ -3,7 +3,8 @@ import User from "../../models/user.model.js";
 import Offer from "../../models/offer.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { VIEWS } from "../../constants/routes.js";
 import Subcategory from "../../models/subcategory.model.js";
 
 // ========================================================================================
@@ -35,7 +36,7 @@ export const renderCategoryPage = async (req, res) => {
 
     const totalPages = Math.ceil(totalCategories / limit);
 
-    return res.render("admin/category", {
+    return res.render(VIEWS.ADMIN.CATEGORY, {
       category: CategoryData,
       currentPage: page,
       totalPages: totalPages,
@@ -71,7 +72,7 @@ export const topCategories = async (req, res) => {
     res.json(categories);
   } catch (error) {
     console.error("Error fetching top categories:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CART_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 // ========================================================================================
@@ -97,7 +98,7 @@ export const topSubCategories = async (req, res) => {
     res.json(subcategories);
   } catch (error) {
     console.error("Error fetching top subcategories:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CART_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -111,7 +112,7 @@ export const renderAddCategoryPage = async (req, res) => {
   try {
     const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
     const categories = await Category.find();
-    res.render("admin/add-category", { categories, admin });
+    res.render(VIEWS.ADMIN.ADD_CATEGORY, { categories, admin });
   } catch (error) {
     console.error("Error fetching categories:", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Error fetching categories");
@@ -142,7 +143,7 @@ export const addCategory = async (req, res) => {
     ) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send("All fields (category and subcategory) are required");
+        .send(CATEGORY_MESSAGES.FIELDS_REQUIRED);
     }
 
     const existingCategory = await Category.findOne({
@@ -150,7 +151,7 @@ export const addCategory = async (req, res) => {
     });
 
     if (existingCategory) {
-      return res.status(StatusCodes.BAD_REQUEST).send("Category already exists");
+      return res.status(StatusCodes.BAD_REQUEST).send(CATEGORY_MESSAGES.CATEGORY_EXISTS);
     }
 
     const newCategory = new Category({
@@ -171,10 +172,10 @@ export const addCategory = async (req, res) => {
 
     await Promise.all([newSubcategory.save(), newCategory.save()]);
 
-    res.redirect("/admin/category");
+    res.redirect(ROUTES.ADMIN.CATEGORY);
   } catch (error) {
     console.error(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Error adding category and subcategory");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CATEGORY_MESSAGES.ADD_ERROR);
   }
 };
 
@@ -189,14 +190,14 @@ export const addSubcategoryToExistingCategory = async (req, res) => {
     const { categoryId, subcategoryName, subcategoryDescription } = req.body;
 
     if (!categoryId || !subcategoryName || !subcategoryDescription) {
-      return res.status(StatusCodes.BAD_REQUEST).send("All fields are required");
+      return res.status(StatusCodes.BAD_REQUEST).send(CATEGORY_MESSAGES.SUBCAT_FIELDS_REQUIRED);
     }
 
     const category = await Category.findById(categoryId).populate(
       "subcategories"
     );
     if (!category) {
-      return res.status(StatusCodes.NOT_FOUND).send("Category not found");
+      return res.status(StatusCodes.NOT_FOUND).send(CATEGORY_MESSAGES.CATEGORY_NOT_FOUND);
     }
 
     const duplicateSubcategory = category.subcategories.find(
@@ -205,7 +206,7 @@ export const addSubcategoryToExistingCategory = async (req, res) => {
     );
 
     if (duplicateSubcategory) {
-      return res.status(StatusCodes.BAD_REQUEST).send("Sub Category already exists");
+      return res.status(StatusCodes.BAD_REQUEST).send(CATEGORY_MESSAGES.SUBCATEGORY_EXISTS);
     }
 
     const newSubcategory = new Subcategory({
@@ -218,10 +219,10 @@ export const addSubcategoryToExistingCategory = async (req, res) => {
 
     await Promise.all([newSubcategory.save(), category.save()]);
 
-    res.redirect(`/admin/category`);
+    res.redirect(ROUTES.ADMIN.CATEGORY);
   } catch (error) {
     console.error("Error adding subcategory:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Error adding subcategory");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CATEGORY_MESSAGES.ADD_SUBCAT_ERROR);
   }
 };
 
@@ -238,10 +239,10 @@ export const renderEditCategoryPage = async (req, res) => {
     const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
     if (!category) {
-      return res.status(StatusCodes.NOT_FOUND).send("Category not found");
+      return res.status(StatusCodes.NOT_FOUND).send(CATEGORY_MESSAGES.CATEGORY_NOT_FOUND);
     }
 
-    res.render("admin/edit-category", { category, admin });
+    res.render(VIEWS.ADMIN.EDIT_CATEGORY, { category, admin });
   } catch (error) {
     console.error("Error fetching category for editing:", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Error fetching category for editing");
@@ -265,7 +266,7 @@ export const updateCategory = async (req, res) => {
 
     if (existingCategory) {
       return res.status(StatusCodes.BAD_REQUEST).json({
-        msg: "Category name already exists",
+        msg: CATEGORY_MESSAGES.CATEGORY_EXISTS_ERROR,
         type: "error",
       });
     }
@@ -278,19 +279,19 @@ export const updateCategory = async (req, res) => {
 
     if (!updatedCategory) {
       return res.status(StatusCodes.NOT_FOUND).json({
-        msg: "Category not found",
+        msg: CATEGORY_MESSAGES.CATEGORY_NOT_FOUND,
         type: "error",
       });
     }
 
     res.json({
-      msg: "Category updated successfully",
+      msg: CATEGORY_MESSAGES.CATEGORY_UPDATED,
       type: "success",
     });
   } catch (error) {
     console.error("Error updating category:", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      msg: "Error updating category",
+      msg: CATEGORY_MESSAGES.CATEGORY_UPDATE_ERROR,
       type: "error",
     });
   }
@@ -308,7 +309,7 @@ export const toggleCategory = async (req, res) => {
     const category = await Category.findById(categoryId);
 
     if (!category) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Category not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: CATEGORY_MESSAGES.CATEGORY_NOT_FOUND });
     }
 
     category.isListed = req.body.isListed;
@@ -320,10 +321,10 @@ export const toggleCategory = async (req, res) => {
     }
 
     await category.save();
-    return res.json({ message: "Category status updated successfully" });
+    return res.json({ message: CATEGORY_MESSAGES.STATUS_UPDATED });
   } catch (error) {
     console.error("Error toggling category: ", error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: CATEGORY_MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -339,16 +340,16 @@ export const toggleSubcategory = async (req, res) => {
     const subcategory = await Subcategory.findById(subcategoryId);
 
     if (!subcategory) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Subcategory not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: CATEGORY_MESSAGES.SUBCATEGORY_NOT_FOUND });
     }
 
     subcategory.isListed = req.body.isListed;
     await subcategory.save();
 
-    return res.json({ message: "Subcategory status updated successfully" });
+    return res.json({ message: CATEGORY_MESSAGES.SUBCAT_STATUS_UPDATED });
   } catch (error) {
     console.error("Error toggling subcategory: ", error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: CATEGORY_MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -368,10 +369,10 @@ export const renderAddOfferPage = async (req, res) => {
     );
 
     if (!category) {
-      return res.status(StatusCodes.NOT_FOUND).send("Category not found");
+      return res.status(StatusCodes.NOT_FOUND).send(CATEGORY_MESSAGES.CATEGORY_NOT_FOUND);
     }
 
-    return res.render("admin/offer", {
+    return res.render(VIEWS.ADMIN.OFFER, {
       category: category,
       categoryId: categoryId,
       subCategories: category.subcategories,
@@ -379,7 +380,7 @@ export const renderAddOfferPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in adding offer in category page", error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(BRAND_MESSAGES.SERVER_ERROR);
   }
 };
 
@@ -410,7 +411,7 @@ export const addOffer = async (req, res) => {
     ) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: "All fields are required.",
+        message: CATEGORY_MESSAGES.OFFER_FIELDS_REQUIRED,
       });
     }
 
@@ -505,12 +506,12 @@ export const addOffer = async (req, res) => {
 
     return res.status(StatusCodes.OK).json({
       success: true,
-      message: "Offer applied successfully.",
+      message: CATEGORY_MESSAGES.OFFER_APPLIED,
     });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: "Something went wrong while adding the offer.",
+      message: CATEGORY_MESSAGES.OFFER_ADD_ERROR,
     });
   }
 };
@@ -529,7 +530,7 @@ export const removeOffer = async (req, res) => {
     if (!offerId) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: "Offer ID is required.",
+        message: CATEGORY_MESSAGES.OFFER_ID_REQUIRED,
       });
     }
 
@@ -545,7 +546,7 @@ export const removeOffer = async (req, res) => {
     if (!offer) {
       return res.status(StatusCodes.NOT_FOUND).json({
         success: false,
-        message: "Offer not found.",
+        message: CATEGORY_MESSAGES.OFFER_NOT_FOUND,
       });
     }
 
@@ -571,13 +572,13 @@ export const removeOffer = async (req, res) => {
 
     return res.status(StatusCodes.OK).json({
       success: true,
-      message: "Offer removed and sale prices reverted successfully.",
+      message: CATEGORY_MESSAGES.OFFER_REMOVED,
     });
   } catch (error) {
     console.error("Error removing offer:", error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: "Something went wrong while removing the offer.",
+      message: CATEGORY_MESSAGES.OFFER_REMOVE_ERROR,
     });
   }
 };

@@ -1,3 +1,5 @@
+import { ROUTES, VIEWS } from "../../constants/routes.js";
+
 // ========================================================================================
 // RENDER HELP PAGE
 // ========================================================================================
@@ -5,12 +7,12 @@
 // ========================================================================================
 export const helpPage = async (req, res) => {
   try {
-    res.render("user/help", {
+    res.render(VIEWS.USER.HELP, {
       user: req.user,
     });
   } catch (error) {
     console.error("Error loading help page:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 // ========================================================================================
@@ -21,7 +23,7 @@ export const helpPage = async (req, res) => {
 // ========================================================================================
 export const getAppPage = async (req, res) => {
   try {
-    res.render("user/get-app", {
+    res.render(VIEWS.USER.GET_APP, {
       user: req.user,
       categories: req.categories,
       brands: req.brands,
@@ -29,7 +31,7 @@ export const getAppPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error loading get app page:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 // ========================================================================================
@@ -39,7 +41,7 @@ export const getAppPage = async (req, res) => {
 // ========================================================================================
 export const privacyPolicy = async (req, res) => {
   try {
-    res.render("user/privacy", {
+    res.render(VIEWS.USER.PRIVACY, {
       user: req.user,
       categories: req.categories,
       brands: req.brands,
@@ -47,7 +49,7 @@ export const privacyPolicy = async (req, res) => {
     });
   } catch (error) {
     console.error("Error loading get app page:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 // ========================================================================================
@@ -57,7 +59,7 @@ export const privacyPolicy = async (req, res) => {
 // ========================================================================================
 export const termsAndCOnditions = async (req, res) => {
   try {
-    res.render("user/terms&conditions", {
+    res.render(VIEWS.USER.TERMS, {
       user: req.user,
       categories: req.categories,
       brands: req.brands,
@@ -65,6 +67,6 @@ export const termsAndCOnditions = async (req, res) => {
     });
   } catch (error) {
     console.error("Error loading get app page:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };

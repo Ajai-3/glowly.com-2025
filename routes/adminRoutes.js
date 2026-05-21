@@ -1,4 +1,5 @@
 import express from "express";
+import { ROUTES } from "../constants/routes.js";
 const router = express.Router();
 import multer from "multer";
 import storage from "../helpers/multer.js";
@@ -79,103 +80,103 @@ import {
 } from "../controllers/admin/admin-settings.controller.js";
 
 // Admin login and logout routes
-router.get("/admin-login", redirectIfLoggedIn, renderLoginPage);
-router.post("/admin-login", redirectIfLoggedIn, handleAdminLogin);
-router.get("/admin-logout", handleAdminLogout);
+router.get(ROUTES.ADMIN.LOGIN, redirectIfLoggedIn, renderLoginPage);
+router.post(ROUTES.ADMIN.LOGIN, redirectIfLoggedIn, handleAdminLogin);
+router.get(ROUTES.ADMIN.LOGOUT, handleAdminLogout);
 
 // router.use(verifyAdminToken);
 router.use(pageMiddlware);
 
 // Dashboard Controller
-router.get("/dashboard", verifyAdminToken, renderDashboardPage);
-router.get("/all-sales-data", verifyAdminToken, salesData);
+router.get(ROUTES.ADMIN.DASHBOARD, verifyAdminToken, renderDashboardPage);
+router.get(ROUTES.ADMIN.SALES_DATA, verifyAdminToken, salesData);
 
 // Top items
-router.get("/top-items", verifyAdminToken, renderTopItemsPage);
+router.get(ROUTES.ADMIN.TOP_ITEMS, verifyAdminToken, renderTopItemsPage);
 
 // Product Routes
-router.get("/products", verifyAdminToken, renderProductsPage);
-router.post("/product-offer", verifyAdminToken, addProductOffer);
-router.post("/remove-product-offer/:productId", verifyAdminToken, removeProductOffer);
-router.get("/search-products", verifyAdminToken, renderProductsPage);
-router.get("/add-products", verifyAdminToken, renderAddProductsPage);
-router.patch("/toggle-product/:id", verifyAdminToken, toggleProduct); 
-router.patch("/toggle-variant", verifyAdminToken, toggleProductVariant);
-router.get("/top-products", verifyAdminToken, topProducts);
-router.post("/add-products", uploadImages, addProduct);
+router.get(ROUTES.ADMIN.PRODUCTS, verifyAdminToken, renderProductsPage);
+router.post(ROUTES.ADMIN.PRODUCT_OFFER, verifyAdminToken, addProductOffer);
+router.post(ROUTES.ADMIN.REMOVE_PRODUCT_OFFER, verifyAdminToken, removeProductOffer);
+router.get(ROUTES.ADMIN.SEARCH_PRODUCTS, verifyAdminToken, renderProductsPage);
+router.get(ROUTES.ADMIN.ADD_PRODUCTS, verifyAdminToken, renderAddProductsPage);
+router.patch(ROUTES.ADMIN.TOGGLE_PRODUCT, verifyAdminToken, toggleProduct); 
+router.patch(ROUTES.ADMIN.TOGGLE_VARIANT, verifyAdminToken, toggleProductVariant);
+router.get(ROUTES.ADMIN.TOP_PRODUCTS, verifyAdminToken, topProducts);
+router.post(ROUTES.ADMIN.ADD_PRODUCTS, uploadImages, addProduct);
 router.get(
-  "/edit-product/:productId/:variantId",
+  ROUTES.ADMIN.EDIT_PRODUCT,
   verifyAdminToken,
   renderEditProductPage
 );
-router.patch("/edit-product/:productId/:variantId", uploadImages, editProduct);
-router.get("/add-variants/:productId", verifyAdminToken, addVariantPage);
+router.patch(ROUTES.ADMIN.EDIT_PRODUCT, uploadImages, editProduct);
+router.get(ROUTES.ADMIN.ADD_VARIANTS, verifyAdminToken, addVariantPage);
 router.patch(
-  "/add-new-variants",
+  ROUTES.ADMIN.ADD_NEW_VARIANTS,
   verifyAdminToken,
   uploadImages,
   addNewVariants
 );
 
 // Brand Router
-router.get("/brands", verifyAdminToken, renderBrandPage);
-router.get("/search-brands", verifyAdminToken, renderBrandPage);
-router.patch("/toggle-brand/:id", verifyAdminToken, toggleBrand);
-router.get("/add-new-brand", verifyAdminToken, renderAddBrandPage);
+router.get(ROUTES.ADMIN.BRANDS, verifyAdminToken, renderBrandPage);
+router.get(ROUTES.ADMIN.SEARCH_BRANDS, verifyAdminToken, renderBrandPage);
+router.patch(ROUTES.ADMIN.TOGGLE_BRAND, verifyAdminToken, toggleBrand);
+router.get(ROUTES.ADMIN.ADD_NEW_BRAND, verifyAdminToken, renderAddBrandPage);
 router.post(
-  "/add-new-brand",
+  ROUTES.ADMIN.ADD_NEW_BRAND,
   verifyAdminToken,
   uploads.single("image"),
   addBrand
 );
-router.get("/edit-brand/:brandId", verifyAdminToken, renderEditBrandPage);
+router.get(ROUTES.ADMIN.EDIT_BRAND, verifyAdminToken, renderEditBrandPage);
 router.patch(
-  "/edit-brand/:brandId",
+  ROUTES.ADMIN.EDIT_BRAND,
   verifyAdminToken,
   uploads.single("image"),
   editBrand
 );
-router.get("/top-brands", verifyAdminToken, topBrands);
+router.get(ROUTES.ADMIN.TOP_BRANDS, verifyAdminToken, topBrands);
 
 // Category & Subcategory Routes
-router.get("/category", verifyAdminToken, renderCategoryPage);
-router.patch("/toggle-category/:id", verifyAdminToken, toggleCategory);
-router.patch("/toggle-subcategory/:id", verifyAdminToken, toggleSubcategory);
-router.get("/add-category", verifyAdminToken, renderAddCategoryPage);
+router.get(ROUTES.ADMIN.CATEGORY, verifyAdminToken, renderCategoryPage);
+router.patch(ROUTES.ADMIN.TOGGLE_CATEGORY, verifyAdminToken, toggleCategory);
+router.patch(ROUTES.ADMIN.TOGGLE_SUBCATEGORY, verifyAdminToken, toggleSubcategory);
+router.get(ROUTES.ADMIN.ADD_CATEGORY, verifyAdminToken, renderAddCategoryPage);
 router.post(
-  "/add-subcategory",
+  ROUTES.ADMIN.ADD_SUBCATEGORY,
   verifyAdminToken,
   addSubcategoryToExistingCategory
 );
-router.post("/add-category", verifyAdminToken, addCategory);
-router.get("/category/edit/:id", verifyAdminToken, renderEditCategoryPage);
-router.patch("/category/edit/:id", verifyAdminToken, updateCategory);
-router.get("/add-offer/:id", verifyAdminToken, renderAddOfferPage);
-router.get("/top-categories", verifyAdminToken, topCategories);
-router.get("/top-subcategories", verifyAdminToken, topSubCategories);
-router.post("/add-offer", verifyAdminToken, addOffer);
-router.post("/remove-offer/:categoryId", verifyAdminToken, removeOffer);
+router.post(ROUTES.ADMIN.ADD_CATEGORY, verifyAdminToken, addCategory);
+router.get(ROUTES.ADMIN.EDIT_CATEGORY, verifyAdminToken, renderEditCategoryPage);
+router.patch(ROUTES.ADMIN.EDIT_CATEGORY, verifyAdminToken, updateCategory);
+router.get(ROUTES.ADMIN.ADD_OFFER_ID, verifyAdminToken, renderAddOfferPage);
+router.get(ROUTES.ADMIN.TOP_CATEGORIES, verifyAdminToken, topCategories);
+router.get(ROUTES.ADMIN.TOP_SUBCATEGORIES, verifyAdminToken, topSubCategories);
+router.post(ROUTES.ADMIN.ADD_OFFER, verifyAdminToken, addOffer);
+router.post(ROUTES.ADMIN.REMOVE_OFFER, verifyAdminToken, removeOffer);
 
 // Users Routes
-router.get("/users", verifyAdminToken, renderUsersPage);
-router.get("/search-user", verifyAdminToken, renderUsersPage);
-router.put("/block-user", verifyAdminToken, blockUser);
-router.put("/unblock-user", verifyAdminToken, unBlockUser);
+router.get(ROUTES.ADMIN.USERS, verifyAdminToken, renderUsersPage);
+router.get(ROUTES.ADMIN.SEARCH_USER, verifyAdminToken, renderUsersPage);
+router.put(ROUTES.ADMIN.BLOCK_USER, verifyAdminToken, blockUser);
+router.put(ROUTES.ADMIN.UNBLOCK_USER, verifyAdminToken, unBlockUser);
 
 // Coupon Routes
-router.get("/coupons", verifyAdminToken, renderCouponsPage);
-router.post("/add-coupon", verifyAdminToken, addCoupon);
-router.patch("/remove-coupon", verifyAdminToken, removeCoupon);
-router.patch("/restore-coupon", verifyAdminToken, restoreCoupon);
+router.get(ROUTES.ADMIN.COUPONS, verifyAdminToken, renderCouponsPage);
+router.post(ROUTES.ADMIN.ADD_COUPON, verifyAdminToken, addCoupon);
+router.patch(ROUTES.ADMIN.REMOVE_COUPON, verifyAdminToken, removeCoupon);
+router.patch(ROUTES.ADMIN.RESTORE_COUPON, verifyAdminToken, restoreCoupon);
 
 // Order Routes
-router.get("/orderlists", verifyAdminToken, renderOrderPage);
-router.patch("/update-order-status", verifyAdminToken, updateOrderStatus);
+router.get(ROUTES.ADMIN.ORDERLISTS, verifyAdminToken, renderOrderPage);
+router.patch(ROUTES.ADMIN.UPDATE_ORDER_STATUS, verifyAdminToken, updateOrderStatus);
 
 // Settings Routes
-router.get("/settings", verifyAdminToken, renderSettingsPage);
+router.get(ROUTES.ADMIN.SETTINGS, verifyAdminToken, renderSettingsPage);
 router.patch(
-  "/settings/update",
+  ROUTES.ADMIN.SETTINGS_UPDATE,
   verifyAdminToken,
   upload.single("profile-pic"),
   updateAdminProfile

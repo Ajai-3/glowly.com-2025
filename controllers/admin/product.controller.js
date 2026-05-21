@@ -4,7 +4,9 @@ import Offer from "../../models/offer.model.js";
 import Brand from "../../models/brand.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { VIEWS } from "../../constants/routes.js";
+import { PRODUCT_MESSAGES } from "../../constants/productMessages.js";
 
 // ========================================================================================
 // RENDER PRODUCTS PAGE
@@ -109,7 +111,7 @@ export const renderProductsPage = async (req, res) => {
 
     const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
-    return res.render("admin/products", {
+    return res.render(VIEWS.ADMIN.PRODUCTS, {
       variants: paginatedVariants,
       currentPage: page,
       totalPages,
@@ -122,7 +124,7 @@ export const renderProductsPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching products:", error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CART_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -149,7 +151,7 @@ export const topProducts = async (req, res) => {
     res.json(topProducts);
   } catch (error) {
     console.error("Error fetching top products:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CART_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -172,7 +174,7 @@ export const renderAddProductsPage = async (req, res) => {
       ? { text: req.query.msg, type: req.query.type }
       : null;
 
-    return res.render("admin/add-products", {
+    return res.render(VIEWS.ADMIN.ADD_PRODUCT, {
       brands,
       categories,
       msg,
@@ -183,7 +185,7 @@ export const renderAddProductsPage = async (req, res) => {
       "Error fetching categories, brands, and subcategories:",
       error
     );
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CART_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -215,7 +217,7 @@ export const addProduct = async (req, res) => {
     ) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, message: "Missing required fields" });
+        .json({ success: false, message: PRODUCT_MESSAGES.MISSING_REQUIRED_FIELDS });
     }
 
     const parsedVariants = JSON.parse(variants);
@@ -223,7 +225,7 @@ export const addProduct = async (req, res) => {
     if (!Array.isArray(parsedVariants) || parsedVariants.length === 0) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, message: "At least one variant is required" });
+        .json({ success: false, message: PRODUCT_MESSAGES.AT_LEAST_ONE_VARIANT });
     }
 
     const sharedImages = req.files.sharedImages
@@ -279,7 +281,7 @@ export const addProduct = async (req, res) => {
     console.error("Error in adding product:", error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: error.message || "Internal Server Error",
+      message: error.message || CART_MESSAGES.INTERNAL_SERVER_ERROR,
     });
   }
 };
@@ -310,7 +312,7 @@ export const renderEditProductPage = async (req, res) => {
       (variant) => variant._id.toString() === variantId
     );
 
-    res.render("admin/edit-product", {
+    res.render(VIEWS.ADMIN.EDIT_PRODUCT, {
       product,
       variant,
       brands,
@@ -362,7 +364,7 @@ export const editProduct = async (req, res) => {
     ) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, message: "Missing required fields" });
+        .json({ success: false, message: PRODUCT_MESSAGES.MISSING_REQUIRED_FIELDS });
     }
 
     const product = await Product.findById(productId);
@@ -370,7 +372,7 @@ export const editProduct = async (req, res) => {
     if (!product) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Product not found" });
+        .json({ success: false, message: CART_MESSAGES.PRODUCT_NOT_FOUND });
     }
 
     const variant = product.variants.find(
@@ -378,7 +380,7 @@ export const editProduct = async (req, res) => {
     );
 
     if (!variant) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Variant not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: CART_MESSAGES.VARIANT_NOT_FOUND });
     }
 
     product.title = productName;
@@ -412,7 +414,7 @@ export const editProduct = async (req, res) => {
     });
   } catch (err) {
     console.log("Error:", err);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(COUPON_MESSAGES.SERVER_ERROR);
   }
 };
 function updateVariantImages(existingImages, removedImages, newImages) {
@@ -480,10 +482,10 @@ export const addVariantPage = async (req, res) => {
     if (!product) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Product not found" });
+        .json({ success: false, message: CART_MESSAGES.PRODUCT_NOT_FOUND });
     }
 
-    return res.render("admin/add-variant", {
+    return res.render(VIEWS.ADMIN.ADD_VARIANT, {
       product,
       admin,
       brands: await Brand.find(),
@@ -491,7 +493,7 @@ export const addVariantPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in rendering add variant page.", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: CATEGORY_MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -508,7 +510,7 @@ export const addNewVariants = async (req, res) => {
     if (!productId || !variants || variants.length === 0) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, message: "Missing required fields" });
+        .json({ success: false, message: PRODUCT_MESSAGES.MISSING_REQUIRED_FIELDS });
     }
 
     const product = await Product.findById(productId);
@@ -516,7 +518,7 @@ export const addNewVariants = async (req, res) => {
     if (!product) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Product not found" });
+        .json({ success: false, message: CART_MESSAGES.PRODUCT_NOT_FOUND });
     }
 
     let parsedVariants;
@@ -525,13 +527,13 @@ export const addNewVariants = async (req, res) => {
     } catch (error) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, message: "Invalid JSON format for variants" });
+        .json({ success: false, message: PRODUCT_MESSAGES.INVALID_JSON_VARIANTS });
     }
 
     if (!Array.isArray(parsedVariants) || parsedVariants.length === 0) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, message: "At least one variant is required" });
+        .json({ success: false, message: PRODUCT_MESSAGES.AT_LEAST_ONE_VARIANT });
     }
 
     parsedVariants.forEach((variant, index) => {
@@ -610,7 +612,7 @@ export const addNewVariants = async (req, res) => {
     console.error("Error in adding variant.", error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ success: false, message: error.message || "Server error" });
+      .json({ success: false, message: error.message || CATEGORY_MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -629,7 +631,7 @@ export const toggleProduct = async (req, res) => {
     if (!product) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Product not found" });
+        .json({ success: false, message: CART_MESSAGES.PRODUCT_NOT_FOUND });
     }
 
     product.isDeleted = !product.isDeleted;
@@ -644,7 +646,7 @@ export const toggleProduct = async (req, res) => {
     });
   } catch (error) {
     console.error("Error toggling product status:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: CATEGORY_MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -662,14 +664,14 @@ export const toggleProductVariant = async (req, res) => {
     if (!product) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Product not found" });
+        .json({ success: false, message: CART_MESSAGES.PRODUCT_NOT_FOUND });
     }
 
     const variant = product.variants.id(variantId);
     if (!variant) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Variant not found" });
+        .json({ success: false, message: CART_MESSAGES.VARIANT_NOT_FOUND });
     }
 
     if (action === "delete") {
@@ -689,7 +691,7 @@ export const toggleProductVariant = async (req, res) => {
     });
   } catch (error) {
     console.error("Error toggling product variant status:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: CATEGORY_MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -706,7 +708,7 @@ export const addProductOffer = async (req, res) => {
     if (!productId || !name || !discount || !endDate) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: "All fields are required.",
+        message: CATEGORY_MESSAGES.OFFER_FIELDS_REQUIRED,
       });
     }
 
@@ -727,7 +729,7 @@ export const addProductOffer = async (req, res) => {
     if (!product) {
       return res.status(StatusCodes.NOT_FOUND).json({
         success: false,
-        message: "Product not found.",
+        message: ORDER_MESSAGES.PRODUCT_NOT_FOUND,
       });
     }
 
@@ -753,13 +755,13 @@ export const addProductOffer = async (req, res) => {
 
     return res.status(StatusCodes.OK).json({
       success: true,
-      message: "Offer applied successfully.",
+      message: CATEGORY_MESSAGES.OFFER_APPLIED,
     });
   } catch (error) {
     console.error(error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: "Something went wrong while adding the offer.",
+      message: CATEGORY_MESSAGES.OFFER_ADD_ERROR,
     });
   }
 };
@@ -778,7 +780,7 @@ export const removeProductOffer = async (req, res) => {
       if (!offerId) {
         return res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: "Offer ID is required.",
+          message: CATEGORY_MESSAGES.OFFER_ID_REQUIRED,
         });
       }
      
@@ -797,7 +799,7 @@ export const removeProductOffer = async (req, res) => {
       if (!offer) {
         return res.status(StatusCodes.NOT_FOUND).json({
           success: false,
-          message: "Offer not found.",
+          message: CATEGORY_MESSAGES.OFFER_NOT_FOUND,
         });
       }
       console.log(offer)
@@ -818,13 +820,13 @@ export const removeProductOffer = async (req, res) => {
   
       return res.status(StatusCodes.OK).json({
         success: true,
-        message: "Offer removed and sale prices reverted successfully.",
+        message: CATEGORY_MESSAGES.OFFER_REMOVED,
       });
     } catch (error) {
       console.error("Error removing offer:", error);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Something went wrong while removing the offer.",
+        message: CATEGORY_MESSAGES.OFFER_REMOVE_ERROR,
       });
     }
   };

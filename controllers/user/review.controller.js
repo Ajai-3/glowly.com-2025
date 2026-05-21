@@ -1,6 +1,7 @@
 import Review from "../../models/review.model.js";
 import Product from "../../models/product.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { ROUTES } from "../../constants/routes.js";
 
 // ========================================================================================
 // ADD REVIEW
@@ -15,20 +16,20 @@ export const review = async (req, res) => {
 
     if (!productId || !variantId || !rating || !review) {
       return res.status(StatusCodes.BAD_REQUEST).json({
-        message: "Product ID, Variant ID, rating, and review are required.",
+        message: PRODUCT_MESSAGES.REVIEW_REQUIRED_FIELDS,
       });
     }
 
     if (rating < 1 || rating > 5) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Rating must be between 1 and 5." });
+        .json({ message: PRODUCT_MESSAGES.RATING_INVALID });
     }
 
     const product = await Product.findOne({ _id: productId });
 
     if (!product) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Product not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: CART_MESSAGES.PRODUCT_NOT_FOUND });
     }
 
     const variant = product.variants.find(
@@ -36,7 +37,7 @@ export const review = async (req, res) => {
     );
 
     if (!variant) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Variant not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: CART_MESSAGES.VARIANT_NOT_FOUND });
     }
 
     const newReview = new Review({
@@ -64,10 +65,10 @@ export const review = async (req, res) => {
 
     return res
       .status(StatusCodes.CREATED)
-      .json({ message: "Review submitted successfully!", review: savedReview });
+      .json({ message: PRODUCT_MESSAGES.REVIEW_SUBMIT_SUCCESS, review: savedReview });
   } catch (error) {
     console.error("Error in submitting review", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -85,20 +86,20 @@ export const editReview = async (req, res) => {
 
     if (!productId || !variantId || !rating || !review) {
       return res.status(StatusCodes.BAD_REQUEST).json({
-        message: "Product ID, Variant ID, rating, and review are required.",
+        message: PRODUCT_MESSAGES.REVIEW_REQUIRED_FIELDS,
       });
     }
 
     if (rating < 1 || rating > 5) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Rating must be between 1 and 5." });
+        .json({ message: PRODUCT_MESSAGES.RATING_INVALID });
     }
 
     const product = await Product.findOne({ _id: productId });
 
     if (!product) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Product not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: CART_MESSAGES.PRODUCT_NOT_FOUND });
     }
 
     const variant = product.variants.find(
@@ -106,17 +107,17 @@ export const editReview = async (req, res) => {
     );
 
     if (!variant) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Variant not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: CART_MESSAGES.VARIANT_NOT_FOUND });
     }
 
     const existingReview = await Review.findOne({ _id: reviewId });
 
     if (!existingReview) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Review not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: PRODUCT_MESSAGES.REVIEW_NOT_FOUND });
     }
 
     if (existingReview.userId.toString() !== user.userId) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: PRODUCT_MESSAGES.REVIEW_UNAUTHORIZED });
     }
 
     existingReview.rating = rating;
@@ -128,9 +129,9 @@ export const editReview = async (req, res) => {
 
     return res
       .status(StatusCodes.CREATED)
-      .json({ success: true, message: "Review edited successfully!" });
+      .json({ success: true, message: PRODUCT_MESSAGES.REVIEW_EDIT_SUCCESS });
   } catch (error) {
     console.error("Error in submitting review", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };

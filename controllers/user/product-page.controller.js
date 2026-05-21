@@ -2,7 +2,8 @@ import Brand from "../../models/brand.model.js";
 import Review from "../../models/review.model.js";
 import Product from "../../models/product.model.js";
 import Subcategory from "../../models/subcategory.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER PRODUCT PAGE
@@ -36,7 +37,7 @@ export const renderProductPage = async (req, res) => {
       isDeleted: false,
     }).populate("categoryId subcategoryId brandId");
 
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new Error(CART_MESSAGES.PRODUCT_NOT_FOUND);
     let variant = product.variants.find(
       (item) => item._id.toString() === variantId && item.isDeleted === false
     );
@@ -46,7 +47,7 @@ export const renderProductPage = async (req, res) => {
         "variants._id": variantId,
         isDeleted: false,
       }).populate("categoryId subcategoryId brandId");
-      if (!product) throw new Error("Variant not found in any product");
+      if (!product) throw new Error(PRODUCT_MESSAGES.VARIANT_NOT_FOUND_IN_PRODUCT);
       variant = product.variants.find(
         (item) => item._id.toString() === variantId && item.isDeleted === false
       );
@@ -104,7 +105,7 @@ export const renderProductPage = async (req, res) => {
 
     relatedVariants = relatedVariants.slice(0, 10);
 
-    return res.render("user/product-page", {
+    return res.render(VIEWS.USER.PRODUCT_PAGE, {
       name: user ? user.name : "",
       user,
       categories,
@@ -120,7 +121,7 @@ export const renderProductPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error rendering product page:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -237,7 +238,7 @@ export const renderShopPage = async (req, res) => {
     const subcategories = await Subcategory.find({ isListed: true });
     const brands = await Brand.find({ isListed: true });
 
-    return res.render("user/shop", {
+    return res.render(VIEWS.USER.SHOP, {
       name: user ? user.name : "",
       user: user,
       products: paginatedVariants.map((item) => item.product),
@@ -255,6 +256,6 @@ export const renderShopPage = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };

@@ -2,8 +2,10 @@ import User from "../../models/user.model.js";
 import Order from "../../models/order.model.js";
 import Wallet from "../../models/wallet.model.js";
 import Product from "../../models/product.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
 import Transaction from "../../models/transaction.model.js";
+import { ORDER_MESSAGES } from "../../constants/orderMessages.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER ORDER PAGE
@@ -78,7 +80,7 @@ export const renderOrderPage = async (req, res) => {
     const queryParams = req.url.split("?")[1] || "";
 
 
-    return res.render("admin/orderlists", {
+    return res.render(VIEWS.ADMIN.ORDER_LISTS, {
       orders: paginatedProducts,
       currentPage: page,
       totalPages: totalPages,
@@ -87,7 +89,7 @@ export const renderOrderPage = async (req, res) => {
       admin,
     });
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CART_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -105,7 +107,7 @@ export const updateOrderStatus = async (req, res) => {
     if (!orderId || !productId || !variantId || !status) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ success: false, message: "Missing required fields." });
+        .json({ success: false, message: ORDER_MESSAGES.MISSING_FIELDS });
     }
 
     const validStatuses = [
@@ -120,7 +122,7 @@ export const updateOrderStatus = async (req, res) => {
     if (!validStatuses.includes(status)) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Invalid status value." });
+        .json({ success: false, message: ORDER_MESSAGES.INVALID_STATUS });
     }
 
     const order = await Order.findOne({
@@ -130,7 +132,7 @@ export const updateOrderStatus = async (req, res) => {
     if (!order) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Order or product not found." });
+        .json({ success: false, message: ORDER_MESSAGES.ORDER_OR_PRODUCT_NOT_FOUND });
     }
 
     const userId = order.user_id._id;
@@ -144,7 +146,7 @@ export const updateOrderStatus = async (req, res) => {
     if (!productInOrder) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Product not found in the order." });
+        .json({ success: false, message: ORDER_MESSAGES.PRODUCT_NOT_IN_ORDER });
     }
 
     const product = await Product.findById(productId)
@@ -159,7 +161,7 @@ export const updateOrderStatus = async (req, res) => {
     if (!product) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Product not found." });
+        .json({ success: false, message: ORDER_MESSAGES.PRODUCT_NOT_FOUND });
     }
     const variant = product.variants.find(
       (v) => v._id.toString() === variantId
@@ -167,7 +169,7 @@ export const updateOrderStatus = async (req, res) => {
     if (!variant) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ success: false, message: "Variant not found in the product." });
+        .json({ success: false, message: ORDER_MESSAGES.VARIANT_NOT_FOUND_IN_PRODUCT });
     }
 
     productInOrder.status = status;
@@ -250,20 +252,20 @@ export const updateOrderStatus = async (req, res) => {
       default:
         return res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ success: false, message: "Invalid order status." });
+          .json({ success: false, message: ORDER_MESSAGES.INVALID_ORDER_STATUS });
     }
 
     await order.save();
 
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "Product status updated successfully.",
+      message: ORDER_MESSAGES.STATUS_UPDATED,
       order,
     });
   } catch (error) {
     console.error("Error updating order status:", error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ success: false, message: "An internal server error occurred." });
+      .json({ success: false, message: ORDER_MESSAGES.INTERNAL_ERROR });
   }
 };

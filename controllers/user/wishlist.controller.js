@@ -4,7 +4,8 @@ import dotenv from "dotenv";
 dotenv.config();
 import Product from "../../models/product.model.js";
 import Wishlist from "../../models/wishlist.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER WISHLIST PAGE
@@ -22,7 +23,7 @@ export const renderWishlistPage = async (req, res) => {
       let totalPages = 0;
       
       if (!token) {
-        return res.redirect("/home");
+        return res.redirect(ROUTES.USER.HOME_ALT);
       }
       
       if (wishlist && wishlist.products.length > 0) {
@@ -60,7 +61,7 @@ export const renderWishlistPage = async (req, res) => {
       }
       
 
-    return res.render("user/my-wishlist", {
+    return res.render(VIEWS.USER.MY_WISHLIST, {
       name: user ? user.name : "",
       user: user,
       categories,
@@ -74,7 +75,7 @@ export const renderWishlistPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error rendering wishlist page", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
 
@@ -89,7 +90,7 @@ export const addToWishlist = async (req, res) => {
     const { product_id, variant_id } = req.body;
 
     if (!token) {
-      return res.redirect("/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
     if (
@@ -98,14 +99,14 @@ export const addToWishlist = async (req, res) => {
     ) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ error: "Invalid product_id or variant_id" });
+        .json({ error: WISHLIST_MESSAGES.INVALID_IDS });
     }
 
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     } catch (err) {
-      return res.status(401).json({ error: "Unauthorized: Invalid token" });
+      return res.status(StatusCodes.UNAUTHORIZED).json({ error: WISHLIST_MESSAGES.UNAUTHORIZED });
     }
 
     const userId = decoded.userId;
@@ -144,6 +145,6 @@ export const addToWishlist = async (req, res) => {
     }
   } catch (error) {
     console.error("Error adding/removing product in wishlist:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };

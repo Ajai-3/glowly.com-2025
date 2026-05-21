@@ -1,4 +1,5 @@
 import Coupon from "../../models/coupon.model.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER MY COUPONS PAGE
@@ -14,10 +15,10 @@ export const myCoupons = async (req, res) => {
     });
 
     if (!token) {
-      return res.redirect("/home");
+      return res.redirect(ROUTES.USER.HOME_ALT);
     }
 
-    return res.render("user/my-coupons", {
+    return res.render(VIEWS.USER.MY_COUPONS, {
       user,
       name: user ? user.name : "",
       cartCount,
@@ -27,6 +28,6 @@ export const myCoupons = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in my coupons:", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };

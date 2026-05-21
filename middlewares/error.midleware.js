@@ -1,17 +1,21 @@
+import { VIEWS } from "../constants/routes.js";
+import { ADMIN_MESSAGES } from "../constants/adminMessages.js";
+import { StatusCodes } from "../constants/StatusCodes.js";
+
 export const notFoundHandler = (req, res) => {
-    res.status(404).render('user/page-404', {
-        statusCode: 404,
-        message: 'Oops! This page has vanished, but our stunning cosmetics collection is still here for you.',
+    res.status(StatusCodes.NOT_FOUND).render(VIEWS.USER.PAGE_404, {
+        statusCode: StatusCodes.NOT_FOUND,
+        message: ADMIN_MESSAGES.PAGE_NOT_FOUND_TITLE,
     });
 };
 
 export const errorHandler = (err, req, res, next) => {
-    const statusCode = err.statusCode || 500;
+    const statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
     const message = err.message || 'Something went wrong';
 
 
-    res.status(statusCode).render('user/page-404', {
+    res.status(statusCode).render(VIEWS.USER.PAGE_404, {
         statusCode: statusCode,
-        message: "Oops! Something went wrong on our end. We're working to fix it. Please try again later.",
+        message: ADMIN_MESSAGES.SERVER_ERROR_TITLE,
     });
 };

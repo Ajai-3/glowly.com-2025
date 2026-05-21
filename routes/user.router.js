@@ -1,4 +1,5 @@
 import express from "express";
+import { ROUTES } from "../constants/routes.js";
 import multer from "multer";
 import passport from "../config/passport.js";
 const router = express.Router();
@@ -71,102 +72,107 @@ import { myCoupons } from "../controllers/user/coupon.controller.js";
 import { helpPage, getAppPage, privacyPolicy, termsAndCOnditions } from "../controllers/user/others.controller.js";
 import { redeemReferral, shareAndEarn } from "../controllers/user/shareAndEarn.controller.js";
 
-router.get("/", loadUserData, renderHomePage);
-router.get("/home", loadUserData, renderHomePage);
-router.get("/login", verifyToken, renderLoginPage);
-router.get("/signup", verifyToken, renderSignupPage);
-router.get("/page-not-found", verifyToken, pageNotFound);
-router.get("/reset-password/:code", renderNewPasswordPage);
-router.get("/otp-message", verifyToken, renderOtpStatusPage);
-router.get("/forgot-password", verifyToken, renderForgotPasswordPage);
-router.get("/otp-verification", verifyToken, renderpOtpVerificationPage);
+router.get(ROUTES.USER.HOME, loadUserData, renderHomePage);
+router.get(ROUTES.USER.HOME_ALT, loadUserData, renderHomePage);
+router.get(ROUTES.USER.LOGIN, verifyToken, renderLoginPage);
+router.get(ROUTES.USER.SIGNUP, verifyToken, renderSignupPage);
+router.get(ROUTES.USER.PAGE_NOT_FOUND, verifyToken, pageNotFound);
+router.get(ROUTES.USER.RESET_PASSWORD_CODE, renderNewPasswordPage);
+router.get(ROUTES.USER.OTP_MESSAGE, verifyToken, renderOtpStatusPage);
+router.get(ROUTES.USER.FORGOT_PASSWORD, verifyToken, renderForgotPasswordPage);
+router.get(ROUTES.USER.OTP_VERIFICATION, verifyToken, renderpOtpVerificationPage);
 router.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  ROUTES.USER.AUTH_GOOGLE,
+  (req, res, next) => {
+    if (req.query.redirect) {
+      req.session.redirectAfterLogin = req.query.redirect;
+    }
+    passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+  }
 );
 router.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/signup" }),
+  ROUTES.USER.AUTH_GOOGLE_CALLBACK,
+  passport.authenticate("google", { failureRedirect: ROUTES.USER.SIGNUP }),
   googleCallbackHandler
 );
-router.post("/resend-otp", handleResendOTP);
-router.post("/reset-password", handleResetPassword);
-router.post("/login", verifyToken, handleUserLogin);
-router.post("/signup", verifyToken, handleUserSignup);
-router.post("/forgot-password", verifyToken, handleForgotPassword);
-router.post("/otp-verification", verifyToken, handleOTPVerification);
+router.post(ROUTES.USER.RESEND_OTP, handleResendOTP);
+router.post(ROUTES.USER.RESET_PASSWORD, handleResetPassword);
+router.post(ROUTES.USER.LOGIN, verifyToken, handleUserLogin);
+router.post(ROUTES.USER.SIGNUP, verifyToken, handleUserSignup);
+router.post(ROUTES.USER.FORGOT_PASSWORD, verifyToken, handleForgotPassword);
+router.post(ROUTES.USER.OTP_VERIFICATION, verifyToken, handleOTPVerification);
 
 // Product, Category & Sub Category Management
-router.get("/shop", loadUserData, renderShopPage);
-router.get("/product/:productId/:variantId", loadUserData, renderProductPage);
+router.get(ROUTES.USER.SHOP, loadUserData, renderShopPage);
+router.get(ROUTES.USER.PRODUCT_DETAIL, loadUserData, renderProductPage);
 
 // Account Mangement
-router.get("/my-account", authenticateToken, loadUserData, renderMyAccountPage);
+router.get(ROUTES.USER.MY_ACCOUNT, authenticateToken, loadUserData, renderMyAccountPage);
 router.post(
-  "/my-account",
+  ROUTES.USER.MY_ACCOUNT,
   upload.single("profile-pic"),
   loadUserData,
   handleProfileUpdate
 );
 
 // Address Management
-router.post("/add-address", authenticateToken, loadUserData, handleAddAddress);
-router.get("/manage-address", authenticateToken, loadUserData, renderManageAddressPage);
-router.post("/remove-address/:addressId", authenticateToken, loadUserData, removeAddress);
+router.post(ROUTES.USER.ADD_ADDRESS, authenticateToken, loadUserData, handleAddAddress);
+router.get(ROUTES.USER.MANAGE_ADDRESS, authenticateToken, loadUserData, renderManageAddressPage);
+router.post(ROUTES.USER.REMOVE_ADDRESS, authenticateToken, loadUserData, removeAddress);
 
-router.get("/edit-address/:id", authenticateToken, loadUserData, editAddressPage);
-router.post("/edit-address/:addressId", authenticateToken, loadUserData, updateAddress);
+router.get(ROUTES.USER.EDIT_ADDRESS_ID, authenticateToken, loadUserData, editAddressPage);
+router.post(ROUTES.USER.EDIT_ADDRESS_ACTION, authenticateToken, loadUserData, updateAddress);
 
 // Cart Management
-router.post("/buy-now", loadUserData, buyNow);
-router.get("/my-cart", authenticateToken, loadUserData, renderCartPage);
-router.post("/add-to-cart", loadUserData, addToCart);
-router.post("/remove-cart-product", loadUserData, removeCartProduct);
-router.patch("/update-cart-product", loadUserData, updateCartPageProduct);
+router.post(ROUTES.USER.BUY_NOW, loadUserData, buyNow);
+router.get(ROUTES.USER.MY_CART, authenticateToken, loadUserData, renderCartPage);
+router.post(ROUTES.USER.ADD_TO_CART, loadUserData, addToCart);
+router.post(ROUTES.USER.REMOVE_CART_PRODUCT, loadUserData, removeCartProduct);
+router.patch(ROUTES.USER.UPDATE_CART_PRODUCT, loadUserData, updateCartPageProduct);
 
 // Checkout Mangement
-router.get("/checkout", authenticateToken, loadUserData, renderCheckoutPage);
-router.post("/place-order", authenticateToken, loadUserData, placeOrder);
-router.post("/verify-coupon", authenticateToken, loadUserData, verifyCoupon);
-router.get("/placeOrderWithBuyNow", authenticateToken, loadUserData, placeOrderWithBuyNow);
-router.post("/verify-razorpay-payment", authenticateToken, loadUserData, verifyRazorpayPayment);
+router.get(ROUTES.USER.CHECKOUT, authenticateToken, loadUserData, renderCheckoutPage);
+router.post(ROUTES.USER.PLACE_ORDER, authenticateToken, loadUserData, placeOrder);
+router.post(ROUTES.USER.VERIFY_COUPON, authenticateToken, loadUserData, verifyCoupon);
+router.get(ROUTES.USER.PLACE_ORDER_BUY_NOW, authenticateToken, loadUserData, placeOrderWithBuyNow);
+router.post(ROUTES.USER.VERIFY_RAZORPAY, authenticateToken, loadUserData, verifyRazorpayPayment);
 
 // Order Management
-router.get("/my-orders", authenticateToken, loadUserData, renderOrderListPage);
-router.patch("/cancel-order", authenticateToken, loadUserData, cancelOrder);
-router.patch("/return-order", authenticateToken, loadUserData, returnOrder);
-router.post("/payment-failed-retry", authenticateToken, loadUserData, paymentRetry);
+router.get(ROUTES.USER.MY_ORDERS, authenticateToken, loadUserData, renderOrderListPage);
+router.patch(ROUTES.USER.CANCEL_ORDER, authenticateToken, loadUserData, cancelOrder);
+router.patch(ROUTES.USER.RETURN_ORDER, authenticateToken, loadUserData, returnOrder);
+router.post(ROUTES.USER.PAYMENT_FAILED_RETRY, authenticateToken, loadUserData, paymentRetry);
 router.get(
-  "/product-details/:orderId/:productId/:variantId/:addressId",
+  ROUTES.USER.ORDER_DETAILS_DETAIL,
   authenticateToken, loadUserData,
   orderDetailsPage
 );
 //Wish list Management
-router.get("/my-wishlist", authenticateToken, loadUserData, renderWishlistPage);
-router.post("/add-to-wishlist/:id", authenticateToken, loadUserData, addToWishlist);
+router.get(ROUTES.USER.MY_WISHLIST, authenticateToken, loadUserData, renderWishlistPage);
+router.post(ROUTES.USER.ADD_TO_WISHLIST, authenticateToken, loadUserData, addToWishlist);
 
 // Wallet Managent
-router.get("/my-wallet", authenticateToken, loadUserData, myWallet);
-router.post("/add-money-to-wallet", authenticateToken, loadUserData, addMoneyToWallet);
+router.get(ROUTES.USER.MY_WALLET, authenticateToken, loadUserData, myWallet);
+router.post(ROUTES.USER.ADD_MONEY_TO_WALLET, authenticateToken, loadUserData, addMoneyToWallet);
 
 // Coupon Management
-router.get("/my-coupons", authenticateToken, loadUserData, myCoupons);
+router.get(ROUTES.USER.MY_COUPONS, authenticateToken, loadUserData, myCoupons);
 
 // Rewview Mangement
-router.post("/submit-review", loadUserData, review);
-router.patch("/edit-review/:reviewId", loadUserData, editReview);
+router.post(ROUTES.USER.SUBMIT_REVIEW, loadUserData, review);
+router.patch(ROUTES.USER.EDIT_REVIEW, loadUserData, editReview);
 
 // Sare & Earn
-router.get("/share-and-earn", authenticateToken, loadUserData, shareAndEarn);
-router.post("/redeem-referral", authenticateToken, loadUserData, redeemReferral);
+router.get(ROUTES.USER.SHARE_AND_EARN, authenticateToken, loadUserData, shareAndEarn);
+router.post(ROUTES.USER.REDEEM_REFERRAL, authenticateToken, loadUserData, redeemReferral);
 
 
 // Other Page Management
-router.get("/help", loadUserData, helpPage);
-router.get("/get-app", loadUserData, getAppPage);
-router.get("/privacy", loadUserData, privacyPolicy)
-router.get("/terms", loadUserData, termsAndCOnditions)
+router.get(ROUTES.USER.HELP, loadUserData, helpPage);
+router.get(ROUTES.USER.GET_APP, loadUserData, getAppPage);
+router.get(ROUTES.USER.PRIVACY, loadUserData, privacyPolicy)
+router.get(ROUTES.USER.TERMS, loadUserData, termsAndCOnditions)
 
-router.get("/logout", loadUserData, handleUserLogout);
+router.get(ROUTES.USER.LOGOUT, loadUserData, handleUserLogout);
 
 export default router;

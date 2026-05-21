@@ -2,8 +2,9 @@ import Brand from "../../models/brand.model.js";
 import User from "../../models/user.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
 import Subcategory from "../../models/subcategory.model.js";
+import { VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER TOP ITEMS PAGE
@@ -84,7 +85,7 @@ export const renderTopItemsPage = async (req, res) => {
       subcategories,
       brands,
     };
-    res.render("admin/top-items", { topItems, admin });
+    res.render(VIEWS.ADMIN.TOP_ITEMS, { topItems, admin });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }

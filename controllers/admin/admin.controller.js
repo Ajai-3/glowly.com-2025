@@ -3,7 +3,9 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 import User from "../../models/user.model.js";
-import { StatusCodes } from "../../helpers/StatusCodes.js";
+import { StatusCodes } from "../../constants/StatusCodes.js";
+import { ADMIN_MESSAGES } from "../../constants/adminMessages.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER ADMIN LOGIN PAGE
@@ -12,11 +14,11 @@ import { StatusCodes } from "../../helpers/StatusCodes.js";
 // ========================================================================================
 export const renderLoginPage = (req, res) => {
   if (req.session.admin) {
-    return res.redirect("/admin/dashboard");
+    return res.redirect(ROUTES.ADMIN.DASHBOARD);
   }
   const msg = req.query.msg || "";
 
-  res.render("admin/admin-login", { msg });
+  res.render(VIEWS.ADMIN.LOGIN, { msg });
 };
 
 // ========================================================================================
@@ -31,12 +33,12 @@ export const handleAdminLogin = async (req, res) => {
     const admin = await User.findOne({ email, role: "admin" });
 
     if (!admin) {
-      return res.render("admin/admin-login", { msg: "Admin not found!" });
+      return res.render(VIEWS.ADMIN.LOGIN, { msg: ADMIN_MESSAGES.ADMIN_NOT_FOUND });
     }
 
     const passwordMatch = await bcrypt.compare(password, admin.password);
     if (!passwordMatch) {
-      return res.render("admin/admin-login", { msg: "Invalid credentials!" });
+      return res.render(VIEWS.ADMIN.LOGIN, { msg: ADMIN_MESSAGES.INVALID_CREDENTIALS });
     }
 
     const token = jwt.sign(
@@ -50,10 +52,10 @@ export const handleAdminLogin = async (req, res) => {
       maxAge: 2 * 60 * 60 * 1000,
     });
 
-    res.redirect("/admin/dashboard");
+    res.redirect(ROUTES.ADMIN.DASHBOARD);
   } catch (error) {
     console.error("Error during admin login:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("An error occurred during login.");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ADMIN_MESSAGES.LOGIN_ERROR);
   }
 };
 
@@ -67,9 +69,9 @@ export const handleAdminLogout = (req, res) => {
   try {
     res.clearCookie("adminToken", { httpOnly: true, secure: false });
 
-    return res.redirect("/admin/admin-login?msg=Logged%20out%20successfully");
+    return res.redirect(ROUTES.ADMIN.LOGIN + "?msg=Logged%20out%20successfully");
   } catch (error) {
     console.error("Unexpected error during logout:", error);
-    res.redirect("/pageerror");
+    res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };

@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import Brand from "../../models/brand.model.js";
 import Product from "../../models/product.model.js";
+import { ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER HOME PAGE
@@ -69,7 +70,7 @@ export const renderHomePage = async (req, res) => {
       return acc;
     }, []);
 
-    return res.render("user/home", {
+    return res.render(VIEWS.USER.HOME, {
       user: user,
       brands,
       categorizedProducts,
@@ -80,6 +81,6 @@ export const renderHomePage = async (req, res) => {
     });
   } catch (error) {
     console.log("Home page is not loading: ", error);
-    return res.redirect("user/page-404");
+    return res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
   }
 };
