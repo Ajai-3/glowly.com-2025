@@ -1,0 +1,41 @@
+// ========================================================================================
+// ORDER AND CHECKOUT CONSTANT MESSAGES
+// ========================================================================================
+
+export const ORDER_MESSAGES = {
+  MISSING_FIELDS: "Missing required fields.",
+  INVALID_STATUS: "Invalid status value.",
+  ORDER_OR_PRODUCT_NOT_FOUND: "Order or product not found.",
+  PRODUCT_NOT_IN_ORDER: "Product not found in the order.",
+  PRODUCT_NOT_FOUND: "Product not found.",
+  VARIANT_NOT_FOUND_IN_PRODUCT: "Variant not found in the product.",
+  INVALID_ORDER_STATUS: "Invalid order status.",
+  STATUS_UPDATED: "Product status updated successfully.",
+  INTERNAL_ERROR: "An internal server error occurred.",
+  ORDER_LIST_NOT_FOUND: "Order list not found.",
+  VARIANT_MISSING: "Product variant is missing.",
+  CANCEL_SUCCESS: "Order canceled successfully",
+  RETURN_NO_DELIVERY_DATE: "Cannot process return. No delivery date found for this order.",
+  RETURN_DENIED_7_DAYS: "Return request denied. You can only return orders within 7 days of delivery.",
+  RETURN_REQUEST_SENT: "Order return request sent successfully",
+  MISSING_DATA: "Missing data.",
+  BUY_NOW_REQUIRED: "Product ID and quantity are required.",
+  INSUFFICIENT_STOCK: "Insufficient stock for variant",
+  INSUFFICIENT_WALLET: "Insufficient wallet balance.",
+  PLACE_SUCCESS_WALLET: "Order placed successfully using wallet!",
+  PLACE_SUCCESS_COD: "Order placed successfully with cash on delivery!",
+  INVALID_PAYMENT_METHOD: "Invalid payment method.",
+  ORDER_ID_REQUIRED: "Order ID is required",
+  ORDER_NOT_FOUND: "Order not found",
+  PAYMENT_ALREADY_COMPLETED: "Payment is already completed for this order",
+  RETRY_NOT_AVAILABLE: "Payment retry is only available for failed or pending payments",
+  OUT_OF_STOCK_PRODUCTS: (products) => `The following products are out of stock: ${products}`,
+  INVALID_GATEWAY_REQUEST: "Invalid request to payment gateway",
+  RETRY_FAILED: "Failed to process payment retry. Please try again.",
+  INVALID_SIGNATURE: "Invalid Razorpay signature.",
+  VERIFY_SUCCESS: "Payment verified and order placed successfully!",
+  COUPON_EXPIRED: "This coupon has expired or is invalid.",
+  COUPON_LIMIT_REACHED: "You have reached the usage limit for this coupon.",
+  COUPON_APPLIED: "Coupon applied successfully.",
+  COUPON_REQ_NOT_MET: "This coupon does not meet the requirements."
+};
