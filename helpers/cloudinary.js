@@ -17,11 +17,29 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'products',
-    allowedFormats: ['jpg', 'jpeg', 'png'],
+    allowedFormats: ['jpg', 'jpeg', 'png', 'webp'],
+  },
+});
+
+const brandStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'brands',
+    allowedFormats: ['jpg', 'jpeg', 'png', 'webp'],
+  },
+});
+
+const profileStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'profiles',
+    allowedFormats: ['jpg', 'jpeg', 'png', 'webp'],
   },
 });
 
 const upload = multer({ storage });
+const uploadBrandImage = multer({ storage: brandStorage });
+const uploadProfileImage = multer({ storage: profileStorage });
 
 const uploadImages = upload.fields([
   { name: 'sharedImages', maxCount: 10 },
@@ -38,4 +56,4 @@ const uploadImages = upload.fields([
 ]);
 
 const cloudinaryV2 = cloudinary.v2;
-export { upload, uploadImages, cloudinaryV2 as cloudinary };
+export { upload, uploadBrandImage, uploadProfileImage, uploadImages, cloudinaryV2 as cloudinary };
