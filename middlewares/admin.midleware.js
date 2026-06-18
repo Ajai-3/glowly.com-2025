@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { ROUTES, VIEWS } from "../constants/routes.js";
+import { ABSOLUTE, ROUTES, VIEWS } from "../constants/routes.js";
 import { ADMIN_MESSAGES } from "../constants/adminMessages.js";
 
 
@@ -10,7 +10,7 @@ export const redirectIfLoggedIn = (req, res, next) => {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
             req.admin = decoded;
-            return res.redirect(ROUTES.ADMIN.DASHBOARD);
+            return res.redirect(ABSOLUTE.ADMIN.DASHBOARD);
         } catch (error) {
             res.clearCookie("adminToken");
         }
@@ -23,7 +23,7 @@ export const verifyAdminToken = (req, res, next) => {
 
     if (!token) {
         return res.render(VIEWS.ADMIN.LOGIN, {
-            msg: { type: "error", msg: ADMIN_MESSAGES.LOGIN_REQUIRED }
+            msg: ADMIN_MESSAGES.LOGIN_REQUIRED
         });
     }
 
