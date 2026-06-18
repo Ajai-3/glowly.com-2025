@@ -48,7 +48,7 @@
             <label for="currentImage">Current Image:</label>
             <% if (brand.brandImage) { %>
               <div class="mb-4">
-                <img src="/uploads/<%= brand.brandImage %>" alt="Current Brand Image" style="max-width: 200px; height: auto; border: 1px solid #ccc; border-radius: 8px; padding: 5px;">
+                <img src="<%= brand.brandImage.startsWith('http') ? brand.brandImage : '/uploads/' + brand.brandImage %>" alt="Current Brand Image" style="max-width: 200px; height: auto; border: 1px solid #ccc; border-radius: 8px; padding: 5px;">
               </div>
             <% } %>
           </div>
