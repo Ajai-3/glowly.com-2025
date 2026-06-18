@@ -229,7 +229,7 @@ export const addProduct = async (req, res) => {
     }
 
     const sharedImages = req.files.sharedImages
-      ? req.files.sharedImages.map((file) => file.path)
+      ? req.files.sharedImages.map((file) => file.path || file.secure_url)
       : [];
 
     const processedVariants = parsedVariants.map((variant, index) => {
@@ -237,7 +237,7 @@ export const addProduct = async (req, res) => {
         shareImages === "true"
           ? sharedImages
           : req.files[`variantImages_${index}`]
-          ? req.files[`variantImages_${index}`].map((file) => file.path)
+          ? req.files[`variantImages_${index}`].map((file) => file.path || file.secure_url)
           : [];
 
       if (variantImages.length === 0) {
@@ -445,7 +445,7 @@ function updateVariantImages(existingImages, removedImages, newImages) {
       const removedImageURL = JSON.parse(removedImage).src;
       const imageIndex = updatedImages.indexOf(removedImageURL);
       if (imageIndex !== -1 && newImagesIndex < newImages.length) {
-        const newImagePath = newImages[newImagesIndex].path;
+        const newImagePath = newImages[newImagesIndex].path || newImages[newImagesIndex].secure_url;
         updatedImages[imageIndex] = newImagePath;
         newImagesIndex++;
       }
@@ -455,7 +455,7 @@ function updateVariantImages(existingImages, removedImages, newImages) {
   if (newImages && newImages.length > 0) {
     let newImagesIndex = 0;
     while (newImagesIndex < newImages.length) {
-      updatedImages.push(newImages[newImagesIndex].path);
+      updatedImages.push(newImages[newImagesIndex].path || newImages[newImagesIndex].secure_url);
       newImagesIndex++;
     }
   }
@@ -567,7 +567,7 @@ export const addNewVariants = async (req, res) => {
     });
 
     const sharedImages = req.files.sharedImages
-      ? req.files.sharedImages.map((file) => file.path)
+      ? req.files.sharedImages.map((file) => file.path || file.secure_url)
       : [];
 
       const processedVariants = [];
@@ -579,7 +579,7 @@ export const addNewVariants = async (req, res) => {
           shareImages === "true"
             ? sharedImages
             : req.files?.[`variantImages_${index}`]
-            ? req.files[`variantImages_${index}`].map((file) => file.path)
+            ? req.files[`variantImages_${index}`].map((file) => file.path || file.secure_url)
             : [];
       
         if (variantImages.length === 0) {

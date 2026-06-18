@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from 'cloudinary';
+import cloudinary from 'cloudinary';
 import pkg from 'multer-storage-cloudinary';
 import multer from 'multer';
 import dotenv from 'dotenv';
@@ -7,7 +7,7 @@ dotenv.config();
 
 const CloudinaryStorage = pkg.CloudinaryStorage || pkg;
 
-cloudinary.config({
+cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
@@ -37,4 +37,5 @@ const uploadImages = upload.fields([
   { name: 'variantImages_8', maxCount: 10 },
 ]);
 
-export { upload, uploadImages, cloudinary };
+const cloudinaryV2 = cloudinary.v2;
+export { upload, uploadImages, cloudinaryV2 as cloudinary };
