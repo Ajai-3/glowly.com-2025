@@ -1,11 +1,7 @@
 import express from "express";
 import { ROUTES } from "../constants/routes.js";
 const router = express.Router();
-import multer from "multer";
-import storage from "../helpers/multer.js";
-const uploads = multer({ storage: storage });
-const upload = multer({ storage: storage });
-import { uploadImages } from "../helpers/cloudinary.js";
+import { uploadImages, uploadBrandImage, uploadProfileImage } from "../helpers/cloudinary.js";
 import {
   renderLoginPage,
   handleAdminLogin,
@@ -126,14 +122,14 @@ router.get(ROUTES.ADMIN.ADD_NEW_BRAND, verifyAdminToken, renderAddBrandPage);
 router.post(
   ROUTES.ADMIN.ADD_NEW_BRAND,
   verifyAdminToken,
-  uploads.single("image"),
+  uploadBrandImage.single("image"),
   addBrand
 );
 router.get(ROUTES.ADMIN.EDIT_BRAND, verifyAdminToken, renderEditBrandPage);
 router.patch(
   ROUTES.ADMIN.EDIT_BRAND,
   verifyAdminToken,
-  uploads.single("image"),
+  uploadBrandImage.single("image"),
   editBrand
 );
 router.get(ROUTES.ADMIN.TOP_BRANDS, verifyAdminToken, topBrands);
@@ -178,7 +174,7 @@ router.get(ROUTES.ADMIN.SETTINGS, verifyAdminToken, renderSettingsPage);
 router.patch(
   ROUTES.ADMIN.SETTINGS_UPDATE,
   verifyAdminToken,
-  upload.single("profile-pic"),
+  uploadProfileImage.single("profile-pic"),
   updateAdminProfile
 );
 

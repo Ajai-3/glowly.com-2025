@@ -3,8 +3,7 @@ import { ROUTES } from "../constants/routes.js";
 import multer from "multer";
 import passport from "../config/passport.js";
 const router = express.Router();
-import storage from "../helpers/multer.js";
-const upload = multer({ storage: storage });
+import { uploadProfileImage } from "../helpers/cloudinary.js";
 import { verifyToken, authenticateToken } from "../middlewares/auth.middleware.js";
 import { loadUserData } from "../middlewares/loadUserData.midleware.js";
 import { renderHomePage } from "../controllers/user/home.controller.js";
@@ -110,7 +109,7 @@ router.get(ROUTES.USER.PRODUCT_DETAIL, loadUserData, renderProductPage);
 router.get(ROUTES.USER.MY_ACCOUNT, authenticateToken, loadUserData, renderMyAccountPage);
 router.post(
   ROUTES.USER.MY_ACCOUNT,
-  upload.single("profile-pic"),
+  uploadProfileImage.single("profile-pic"),
   loadUserData,
   handleProfileUpdate
 );
