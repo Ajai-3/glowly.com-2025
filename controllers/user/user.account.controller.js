@@ -3,6 +3,8 @@ import User from "../../models/user.model.js";
 import Address from "../../models/address.model.js";
 import { StatusCodes } from "../../constants/StatusCodes.js";
 import { ROUTES, VIEWS } from "../../constants/routes.js";
+import { USER_MESSAGES } from "../../constants/userMessages.js";
+import { CATEGORY_MESSAGES } from "../../constants/categoryMessages.js";
 
 // ========================================================================================
 // RENDER MY ACCOUNT PAGE
