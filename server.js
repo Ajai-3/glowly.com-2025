@@ -20,6 +20,13 @@ const SESSION_SECRET = process.env.SESSION_SECRET;
 
 
 app.use((req, res, next) => {
+    if (req.query && req.query._method) {
+        req.method = req.query._method.toUpperCase();
+    }
+    next();
+});
+
+app.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     next();
 });
