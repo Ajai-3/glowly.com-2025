@@ -256,7 +256,7 @@
         confirmButton.addEventListener('click', async () => {
           try {
             const response = await fetch(`/remove-address/${addressId}`, {
-              method: 'POST',
+              method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json'
               }

@@ -107,7 +107,7 @@ router.get(ROUTES.USER.PRODUCT_DETAIL, loadUserData, renderProductPage);
 
 // Account Mangement
 router.get(ROUTES.USER.MY_ACCOUNT, authenticateToken, loadUserData, renderMyAccountPage);
-router.post(
+router.patch(
   ROUTES.USER.MY_ACCOUNT,
   uploadProfileImage.single("profile-pic"),
   loadUserData,
@@ -117,16 +117,16 @@ router.post(
 // Address Management
 router.post(ROUTES.USER.ADD_ADDRESS, authenticateToken, loadUserData, handleAddAddress);
 router.get(ROUTES.USER.MANAGE_ADDRESS, authenticateToken, loadUserData, renderManageAddressPage);
-router.post(ROUTES.USER.REMOVE_ADDRESS, authenticateToken, loadUserData, removeAddress);
+router.patch(ROUTES.USER.REMOVE_ADDRESS, authenticateToken, loadUserData, removeAddress);
 
 router.get(ROUTES.USER.EDIT_ADDRESS_ID, authenticateToken, loadUserData, editAddressPage);
-router.post(ROUTES.USER.EDIT_ADDRESS_ACTION, authenticateToken, loadUserData, updateAddress);
+router.patch(ROUTES.USER.EDIT_ADDRESS_ACTION, authenticateToken, loadUserData, updateAddress);
 
 // Cart Management
 router.post(ROUTES.USER.BUY_NOW, loadUserData, buyNow);
 router.get(ROUTES.USER.MY_CART, authenticateToken, loadUserData, renderCartPage);
 router.post(ROUTES.USER.ADD_TO_CART, loadUserData, addToCart);
-router.post(ROUTES.USER.REMOVE_CART_PRODUCT, loadUserData, removeCartProduct);
+router.patch(ROUTES.USER.REMOVE_CART_PRODUCT, loadUserData, removeCartProduct);
 router.patch(ROUTES.USER.UPDATE_CART_PRODUCT, loadUserData, updateCartPageProduct);
 
 // Checkout Mangement
@@ -148,7 +148,7 @@ router.get(
 );
 //Wish list Management
 router.get(ROUTES.USER.MY_WISHLIST, authenticateToken, loadUserData, renderWishlistPage);
-router.post(ROUTES.USER.ADD_TO_WISHLIST, authenticateToken, loadUserData, addToWishlist);
+router.patch(ROUTES.USER.ADD_TO_WISHLIST, authenticateToken, loadUserData, addToWishlist);
 
 // Wallet Managent
 router.get(ROUTES.USER.MY_WALLET, authenticateToken, loadUserData, myWallet);

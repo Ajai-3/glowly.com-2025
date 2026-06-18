@@ -95,7 +95,7 @@ const toastSuccess = (message) => {
       confirmButton.addEventListener('click', async () => {
         try {
           const response = await fetch(`/remove-address/${addressId}`, {
-            method: 'POST',
+            method: 'PATCH',
             headers: {
               'Content-Type': 'application/json'
             }
@@ -362,7 +362,7 @@ const toastSuccess = (message) => {
 
       try {
         const response = await fetch(`/edit-address/${addressId}`, {
-          method: 'POST',
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json'
           },
