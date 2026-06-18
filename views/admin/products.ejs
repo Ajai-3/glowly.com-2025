@@ -508,7 +508,7 @@ async function removeOffer(productId, offerId, button) {
   }
 
   const response = await fetch(`/admin/remove-product-offer/${productId}`, {
-    method: 'POST',
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },

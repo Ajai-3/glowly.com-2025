@@ -313,7 +313,7 @@
     confirmButton.addEventListener('click', () => {
       if (currentProductId && currentVariantId) {
         fetch("/remove-cart-product", {
-            method: 'POST',
+            method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
             },

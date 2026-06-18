@@ -1,11 +1,7 @@
 import express from "express";
 import { ROUTES } from "../constants/routes.js";
 const router = express.Router();
-import multer from "multer";
-import storage from "../helpers/multer.js";
-const uploads = multer({ storage: storage });
-const upload = multer({ storage: storage });
-import { uploadImages } from "../helpers/cloudinary.js";
+import { uploadImages, uploadBrandImage, uploadProfileImage } from "../helpers/cloudinary.js";
 import {
   renderLoginPage,
   handleAdminLogin,
@@ -97,7 +93,7 @@ router.get(ROUTES.ADMIN.TOP_ITEMS, verifyAdminToken, renderTopItemsPage);
 // Product Routes
 router.get(ROUTES.ADMIN.PRODUCTS, verifyAdminToken, renderProductsPage);
 router.post(ROUTES.ADMIN.PRODUCT_OFFER, verifyAdminToken, addProductOffer);
-router.post(ROUTES.ADMIN.REMOVE_PRODUCT_OFFER, verifyAdminToken, removeProductOffer);
+router.patch(ROUTES.ADMIN.REMOVE_PRODUCT_OFFER, verifyAdminToken, removeProductOffer);
 router.get(ROUTES.ADMIN.SEARCH_PRODUCTS, verifyAdminToken, renderProductsPage);
 router.get(ROUTES.ADMIN.ADD_PRODUCTS, verifyAdminToken, renderAddProductsPage);
 router.patch(ROUTES.ADMIN.TOGGLE_PRODUCT, verifyAdminToken, toggleProduct); 
@@ -126,14 +122,14 @@ router.get(ROUTES.ADMIN.ADD_NEW_BRAND, verifyAdminToken, renderAddBrandPage);
 router.post(
   ROUTES.ADMIN.ADD_NEW_BRAND,
   verifyAdminToken,
-  uploads.single("image"),
+  uploadBrandImage.single("image"),
   addBrand
 );
 router.get(ROUTES.ADMIN.EDIT_BRAND, verifyAdminToken, renderEditBrandPage);
 router.patch(
   ROUTES.ADMIN.EDIT_BRAND,
   verifyAdminToken,
-  uploads.single("image"),
+  uploadBrandImage.single("image"),
   editBrand
 );
 router.get(ROUTES.ADMIN.TOP_BRANDS, verifyAdminToken, topBrands);
@@ -155,13 +151,13 @@ router.get(ROUTES.ADMIN.ADD_OFFER_ID, verifyAdminToken, renderAddOfferPage);
 router.get(ROUTES.ADMIN.TOP_CATEGORIES, verifyAdminToken, topCategories);
 router.get(ROUTES.ADMIN.TOP_SUBCATEGORIES, verifyAdminToken, topSubCategories);
 router.post(ROUTES.ADMIN.ADD_OFFER, verifyAdminToken, addOffer);
-router.post(ROUTES.ADMIN.REMOVE_OFFER, verifyAdminToken, removeOffer);
+router.patch(ROUTES.ADMIN.REMOVE_OFFER, verifyAdminToken, removeOffer);
 
 // Users Routes
 router.get(ROUTES.ADMIN.USERS, verifyAdminToken, renderUsersPage);
 router.get(ROUTES.ADMIN.SEARCH_USER, verifyAdminToken, renderUsersPage);
-router.put(ROUTES.ADMIN.BLOCK_USER, verifyAdminToken, blockUser);
-router.put(ROUTES.ADMIN.UNBLOCK_USER, verifyAdminToken, unBlockUser);
+router.patch(ROUTES.ADMIN.BLOCK_USER, verifyAdminToken, blockUser);
+router.patch(ROUTES.ADMIN.UNBLOCK_USER, verifyAdminToken, unBlockUser);
 
 // Coupon Routes
 router.get(ROUTES.ADMIN.COUPONS, verifyAdminToken, renderCouponsPage);
@@ -178,7 +174,7 @@ router.get(ROUTES.ADMIN.SETTINGS, verifyAdminToken, renderSettingsPage);
 router.patch(
   ROUTES.ADMIN.SETTINGS_UPDATE,
   verifyAdminToken,
-  upload.single("profile-pic"),
+  uploadProfileImage.single("profile-pic"),
   updateAdminProfile
 );
 

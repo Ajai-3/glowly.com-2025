@@ -25,4 +25,23 @@
       window.history.replaceState(null, '', window.location.pathname);
     }
   })();
+
+  function confirmUserLogout(event) {
+    event.preventDefault();
+    Swal.fire({
+      title: 'Logout',
+      text: "Are you sure you want to log out?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#fc2779',
+      cancelButtonColor: '#212121',
+      background: '#121212',
+      color: '#f3f4f7',
+      confirmButtonText: 'Yes, Logout'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = '/logout';
+      }
+    });
+  }
 </script>

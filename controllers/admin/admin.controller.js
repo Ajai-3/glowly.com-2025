@@ -5,7 +5,7 @@ dotenv.config();
 import User from "../../models/user.model.js";
 import { StatusCodes } from "../../constants/StatusCodes.js";
 import { ADMIN_MESSAGES } from "../../constants/adminMessages.js";
-import { ROUTES, VIEWS } from "../../constants/routes.js";
+import { ABSOLUTE, ROUTES, VIEWS } from "../../constants/routes.js";
 
 // ========================================================================================
 // RENDER ADMIN LOGIN PAGE
@@ -52,7 +52,7 @@ export const handleAdminLogin = async (req, res) => {
       maxAge: 2 * 60 * 60 * 1000,
     });
 
-    res.redirect(ROUTES.ADMIN.DASHBOARD);
+    res.redirect(ABSOLUTE.ADMIN.DASHBOARD);
   } catch (error) {
     console.error("Error during admin login:", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ADMIN_MESSAGES.LOGIN_ERROR);
@@ -69,9 +69,9 @@ export const handleAdminLogout = (req, res) => {
   try {
     res.clearCookie("adminToken", { httpOnly: true, secure: false });
 
-    return res.redirect(ROUTES.ADMIN.LOGIN + "?msg=Logged%20out%20successfully");
+    return res.redirect(ABSOLUTE.ADMIN.LOGIN + "?msg=Logged%20out%20successfully");
   } catch (error) {
     console.error("Unexpected error during logout:", error);
-    res.redirect(ROUTES.USER.PAGE_NOT_FOUND);
+    res.redirect(ABSOLUTE.USER.PAGE_NOT_FOUND);
   }
 };

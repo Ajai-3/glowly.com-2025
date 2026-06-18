@@ -361,7 +361,7 @@ async function removeOffer(categoryId, offerId, button) {
   }
 
   const response = await fetch(`/admin/remove-offer/${categoryId}`, {
-    method: 'POST',
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },

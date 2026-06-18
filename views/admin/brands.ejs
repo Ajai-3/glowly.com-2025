@@ -83,7 +83,7 @@
           <% brands.forEach((brand, index) => { %>
           <tr>
             <td><%= (currentPage - 1) * 5 + index + 1 %></td>
-            <td><img src="/uploads/<%= brand.brandImage %>" alt="<%= brand.brandName %> Image" width="50" height="50"></td>
+            <td><img src="<%= brand.brandImage.startsWith('http') ? brand.brandImage : '/uploads/' + brand.brandImage %>" alt="<%= brand.brandName %> Image" width="50" height="50"></td>
 
             <td><%= brand.brandName %></td>
             <td><%= brand.created_at.toLocaleDateString() %></td>

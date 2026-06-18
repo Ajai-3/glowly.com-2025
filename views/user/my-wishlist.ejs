@@ -26,7 +26,7 @@
           <hr />
           <a href="/user/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a>
           <hr />
-          <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
+          <a href="#" onclick="confirmUserLogout(event)"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
           <hr />
         </div>
       </div>
@@ -221,7 +221,7 @@
         const url = form.action;
 
         fetch(url, {
-            method: "POST",
+            method: "PATCH",
             headers: {
               "Content-Type": "application/json",
             },

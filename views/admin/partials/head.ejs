@@ -70,7 +70,7 @@
         </a>
       
         <!-- Logout Link -->
-        <a href="/admin/admin-logout" class="<%= currentPath === '/admin/admin-logout' ? 'active' : '' %>">
+        <a href="#" onclick="confirmAdminLogout(event)" class="<%= currentPath === '/admin/admin-logout' ? 'active' : '' %>">
           <i class="fa-solid fa-power-off"></i>&nbsp;&nbsp;&nbsp;Logout
         </a>
       </div>
@@ -79,3 +79,25 @@
       <div id="preloader" style="display: none;">
         <div class="loader"></div>
       </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script>
+        function confirmAdminLogout(event) {
+          event.preventDefault();
+          Swal.fire({
+            title: 'Logout',
+            text: "Are you sure you want to log out?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#fc2779',
+            cancelButtonColor: '#212121',
+            background: '#121212',
+            color: '#f3f4f7',
+            confirmButtonText: 'Yes, Logout'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = '/admin/admin-logout';
+            }
+          });
+        }
+      </script>

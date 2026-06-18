@@ -33,7 +33,7 @@ export const updateAdminProfile = async (req, res) => {
     const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
     if (req.file) {
-      admin.profilePic = `/uploads/profile-pics/${file.filename}`;
+      admin.profilePic = req.file.path || req.file.secure_url;
     }
 
     const updatedAdmin = await User.findByIdAndUpdate(

@@ -116,7 +116,7 @@ export const renderAddBrandPage = async (req, res) => {
 export const addBrand = async (req, res) => {
   try {
     const { name, description } = req.body;
-    const image = req.file?.filename;
+    const image = req.file?.path || req.file?.secure_url;
 
     if (!name) {
       return res.status(StatusCodes.BAD_REQUEST).json({ message: BRAND_MESSAGES.BRAND_NAME_REQUIRED });
@@ -192,20 +192,7 @@ export const editBrand = async (req, res) => {
     };
 
     if (req.file) {
-      updatedBrandData.brandImage = req.file.filename;
-
-      // Delete old image
-      const existingBrand = await Brand.findById(brandId);
-      if (existingBrand?.brandImage) {
-        const imagePath = path.join(
-          __dirname,
-          "../public/uploads",
-          existingBrand.brandImage
-        );
-        if (fs.existsSync(imagePath)) {
-          fs.unlinkSync(imagePath);
-        }
-      }
+      updatedBrandData.brandImage = req.file.path || req.file.secure_url;
     }
 
     const updatedBrand = await Brand.findByIdAndUpdate(

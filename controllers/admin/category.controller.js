@@ -4,7 +4,8 @@ import Offer from "../../models/offer.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
 import { StatusCodes } from "../../constants/StatusCodes.js";
-import { VIEWS } from "../../constants/routes.js";
+import { VIEWS, ROUTES, ABSOLUTE } from "../../constants/routes.js";
+import { CATEGORY_MESSAGES } from "../../constants/categoryMessages.js";
 import Subcategory from "../../models/subcategory.model.js";
 
 // ========================================================================================
@@ -172,7 +173,7 @@ export const addCategory = async (req, res) => {
 
     await Promise.all([newSubcategory.save(), newCategory.save()]);
 
-    res.redirect(ROUTES.ADMIN.CATEGORY);
+    res.redirect(ABSOLUTE.ADMIN.CATEGORY);
   } catch (error) {
     console.error(error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(CATEGORY_MESSAGES.ADD_ERROR);
