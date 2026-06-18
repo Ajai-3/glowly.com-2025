@@ -152,7 +152,7 @@
             <hr>
             <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a>
             <hr>
-            <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
+            <a href="#" onclick="confirmUserLogout(event)"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
             <hr class="mb-0">
           </div>
         </div>
@@ -286,7 +286,7 @@
 
       <% if (user) { %>
       <div class="sidbar-div">
-        <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
+        <a href="#" onclick="confirmUserLogout(event)"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
         <i class="fa fa-plus"></i>
       </div>
       <% } %>

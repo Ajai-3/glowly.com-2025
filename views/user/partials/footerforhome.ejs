@@ -137,7 +137,167 @@
     var currentPath = window.location.pathname + window.location.search;
     var redirect = encodeURIComponent(currentPath);
     loginLinks.forEach(function(link) {
+<footer>
+  <div class="footer">
+        <div class="footer-div-1"></div>
+
+    <div class="footer-div-2">
+            <div class="footer-div-2-section1">
+                <h6>Exclusive</h6>
+                <p>Subscribe</p>
+                <p>Get 10% off your first order</p>
+                <form action="/send">
+                    <div class="footer-send-email mt-2">
+                        <input type="email" id="email" name="email" placeholder="Enter email" required>
+                        <button type="submit" class="footer-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- <div class="footer-div-2-section2"> -->
+                <div>
+                    <ul>
+                        <li><h7>Support</h7></li>
+                        <li><a href="https://www.google.com/maps?q=Glowly,+KL+3333,+India">Glowly, KL 3333, India</a></li>
+                        <li><a href="mailto:support@glowly.com">support@glowly.com</a></li>
+                        <li><a href="tel:+913333333333">+91-333-333-3333</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <ul>
+                        <li><h7>Account</h7></li>
+                        <li><a href="/my-account">My Account</a></li>
+                        <li><a href="/login">Login / Register</a></li>
+                        <li><a href="/my-cart">Cart</a></li>
+                        <li><a href="/my-wishlist">Wishlist</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <ul>
+                        <li><h7>Quick Link</h7></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms & Conditions</a></li>
+                        <li><a href="/get-app">Get App</a></li>
+                        <li><a href="/help">Help Center</a></li>
+                    </ul>
+                </div>        
+            <!-- </div> -->
+
+            <div class="footer-div-2-section3">
+                <div class="download-app">
+                    <h6 class="m-0">Download Our App</h6>
+                    <a href="/get-app"
+                      ><img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg" alt="App Store" style="width: 70px;"></a>
+                    <a href="/get-app"
+                      > <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Google Play" style="width: 90px;"></a>
+                  </div>
+            
+                  <div class="payment-methods">
+                    <h6 class="m-0">Payment Methods</h6>
+                    <img src="https://img.icons8.com/color/96/000000/visa.png" alt="Visa" style="width: 35px;" />
+                    <img src="https://img.icons8.com/color/96/000000/amex.png" alt="American Express" style="width: 35px;" />
+                    <img src="https://img.icons8.com/color/96/000000/mastercard.png" alt="MasterCard" style="width: 35px;" />
+                    <img src="https://img.icons8.com/color/96/000000/paypal.png" alt="PayPal" style="width: 35px;" />
+                    <!-- Add more payment method icons if needed -->
+                  </div>
+            </div>
+
+    </div>
+            <div class="footer-div-3">
+                <div>
+                    <div class="footer-div-3-icon"><i class="fa-solid fa-truck"></i></div>
+                    <p>FREE AND FAST DELIVERY</p>
+                    <p2>Free delivery for all orders over $140</p2>
+                </div>
+                <div>
+                    <div class="footer-div-3-icon"><i class="fa-solid fa-headset"></i></div>
+                    <p>24/7 CUSTOMER SERVICE</p>
+                    <p2>Friendly 24/7 customer support</p2>
+                </div>
+                <div>
+                    <div class="footer-div-3-icon"><i class="fas fa-shield-alt"></i></div>
+                    <p>100% AUTHENTIC</p>
+                    <p2>Products Sourced Directly</p2>   
+                </div>
+            </div>
+    <div class="footer-div-4">
+        <p> 2024 GLOWLY E-RETAIL LIMITED All Rights Reserved.</p>
+        </div>
+    </div>
+</footer>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+<!-- Notyf JS -->
+<script src="https://cdn.jsdelivr.net/npm/notyf@3.5.0/notyf.min.js"></script>
+ <!-- React Toastify JS -->
+ <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+ <!-- jQuery -->
+ <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+ <!-- SweetAlert2 -->
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <!-- Bootstrap -->
+ <script
+   src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+   integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+   crossorigin="anonymous"
+ ></script>
+ <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+ <!-- Custom Script -->
+ <script src="/js/user.js"></script>
+ <script src="/js/responsive.js"></script>
+
+<script>
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var msg = params.get('msg');
+    if (msg) {
+      iziToast.success({
+        message: msg,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  })();
+</script>
+
+<script>
+  (function() {
+    var loginLinks = document.querySelectorAll('a[href="/login"]');
+    var currentPath = window.location.pathname + window.location.search;
+    var redirect = encodeURIComponent(currentPath);
+    loginLinks.forEach(function(link) {
       link.href = '/login?redirect=' + redirect;
     });
   })();
+</script>
+
+<script>
+  function confirmUserLogout(event) {
+    event.preventDefault();
+    Swal.fire({
+      title: 'Logout',
+      text: "Are you sure you want to log out?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#fc2779',
+      cancelButtonColor: '#212121',
+      background: '#121212',
+      color: '#f3f4f7',
+      confirmButtonText: 'Yes, Logout'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = '/logout';
+      }
+    });
+  }
 </script>
