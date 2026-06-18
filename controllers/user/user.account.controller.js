@@ -50,7 +50,7 @@ export const handleProfileUpdate = async (req, res) => {
     const updatedData = { name, dateOfBirth, phone_no };
 
     if (req.file) {
-      updatedData.profilePic = `/uploads/profile-pics/${req.file.filename}`;
+      updatedData.profilePic = req.file.path || req.file.secure_url;
     }
 
     const updatedUser = await User.findByIdAndUpdate(user.userId, updatedData, {

@@ -33,6 +33,10 @@ export const renderOrderPage = async (req, res) => {
       .populate("products.product_id")
       .sort({ createdAt: -1 });
 
+    const returnRequestCount = orders.reduce((acc, order) => {
+      return acc + order.products.filter(p => p.status === "return_requested").length;
+    }, 0);
+
     const allProducts = orders
       .flatMap((order) =>
         order.products
@@ -86,6 +90,7 @@ export const renderOrderPage = async (req, res) => {
       totalPages: totalPages,
       queryParams: queryParams,
       status: status,
+      returnRequestCount,
       admin,
     });
   } catch (error) {
