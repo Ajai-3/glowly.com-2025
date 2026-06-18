@@ -44,14 +44,19 @@
               <option value="shipped" <%= status === 'shipped' ? 'selected' : '' %>>Shipped</option>
               <option value="delivered" <%= status === 'delivered' ? 'selected' : '' %>>Delivered</option>
               <option value="canceled" <%= status === 'canceled' ? 'selected' : '' %>>Canceled</option>
-              <option value="return_reqested" <%= status === 'return_requested' ? 'selected' : '' %>>Return Requested</option>
+              <option value="return_requested" <%= status === 'return_requested' ? 'selected' : '' %>>Return Requested</option>
               <option value="returned" <%= status === 'returned' ? 'selected' : '' %>>Returned</option>
             </select>
           </label>
         </div>
       </form>
-
-
+      
+      <!-- Return Request Count Button -->
+      <% if (typeof returnRequestCount !== 'undefined') { %>
+        <a href="/admin/orderlists?status=return_requested" class="btn" style="background-color: #fc2779; color: white; margin-left: 15px; border-radius: 4px; padding: 6px 12px; text-decoration: none; font-size: 14px; font-weight: 500;">
+          Return Requests <span class="badge" style="background-color: white; color: #fc2779; margin-left: 5px; border-radius: 50%; padding: 2px 6px;"><%= returnRequestCount %></span>
+        </a>
+      <% } %>
 
     </div>
 
@@ -111,7 +116,7 @@
                   <% if (order.status === 'shipped') { %> pink-p <% } %>
                   <% if (order.status === 'delivered') { %> green-p <% } %>
                   <% if (order.status === 'canceled') { %> red-p <% } %>
-                  <% if (order.status === 'return_reqested') { %> yellow-p <% } %>
+                  <% if (order.status === 'return_requested') { %> yellow-p <% } %>
                   <% if (order.status === 'returned') { %> blue-p <% } %>">
               <%= order.status %>
             </p2>
@@ -124,7 +129,7 @@
               <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %> <%= order.status !== 'pending' && order.status !== 'processing' && order.status !== 'shipped' ? 'disabled' : '' %>>shipped</option>
               <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %> <%= order.status !== 'pending' && order.status !== 'processing' && order.status !== 'shipped' && order.status !== 'delivered' ? 'disabled' : '' %>>delivered</option>
               <option value="canceled" <%= order.status === 'canceled' ? 'selected' : '' %> <%= order.status !== 'pending' && order.status !== 'processing' && order.status !== 'shipped' && order.status !== 'delivered' && order.status !== 'canceled' ? 'disabled' : '' %>>canceled</option>
-              <option value="returned" <%= order.status === 'returned' ? 'selected' : '' %> <%= order.status !== 'return_reqested' ? 'disabled' : '' %>>returned</option>
+              <option value="returned" <%= order.status === 'returned' ? 'selected' : '' %> <%= order.status !== 'return_requested' ? 'disabled' : '' %>>returned</option>
             </select>
   
           </td>
