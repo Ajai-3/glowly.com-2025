@@ -3,8 +3,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const priceElements = document.querySelectorAll('.price-inr'); 
 
     priceElements.forEach(element => {
-        const price = parseInt(element.textContent.replace(/[^0-9]/g, ''), 10); 
-        element.textContent = '₹ ' + price.toLocaleString('en-IN');  
+        const cleaned = element.textContent.replace(/[^\d.-]/g, '');
+        if (cleaned) {
+            const price = parseFloat(cleaned);
+            if (!isNaN(price)) {
+                element.textContent = '₹ ' + price.toLocaleString('en-IN', {
+                    minimumFractionDigits: Number.isInteger(price) ? 0 : 2,
+                    maximumFractionDigits: 2
+                });
+            }
+        }
     });
 });
 
