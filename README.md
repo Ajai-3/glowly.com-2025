@@ -12,6 +12,7 @@
   <img src="https://img.shields.io/badge/License-ISC-FF69B4?style=flat-square" alt="License">
   <img src="https://img.shields.io/badge/PRs-Welcome-FF69B4?style=flat-square" alt="PRs Welcome">
   <img src="https://img.shields.io/badge/Node.js-v20-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node Version">
+  <img src="https://img.shields.io/badge/Terraform-844FBA?style=flat-square&logo=terraform&logoColor=white" alt="Terraform">
 </p>
 
 ---
@@ -27,12 +28,12 @@
   <img src="https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap">
   <img src="https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white" alt="jQuery">
   <img src="https://img.shields.io/badge/EJS-B4CA65?style=for-the-badge&logo=ejs&logoColor=black" alt="EJS">
-  <img src="https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" alt="Chart.js">
+  <img src="https://img.shields.io/badge/Chart.js-FF6384?style=flat-square&logo=chartdotjs&logoColor=white" alt="Chart.js">
 </p>
 
-- **EJS**: Powerful templating engine for dynamic server-side content rendering.
-- **Chart.js**: For real-time sales and revenue analytics dashboard.
-- **Notyf / SweetAlert2**: For sleek, modern user notifications and alerts.
+* **EJS**: Powerful templating engine for dynamic server-side content rendering.
+* **Chart.js**: For real-time sales and revenue analytics dashboard.
+* **Notyf / SweetAlert2**: For sleek, modern user notifications and alerts.
 
 ### Backend & Logic
 
@@ -45,10 +46,10 @@
   <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT">
 </p>
 
-- **Node.js & Express**: High-performance server-side execution and routing.
-- **MongoDB Atlas**: Cloud-based NoSQL database with schema-based modeling.
-- **Passport.js**: Robust authentication including Google OAuth 2.0.
-- **JWT & bcrypt**: Secure token-based auth and password hashing.
+* **Node.js & Express**: High-performance server-side execution and routing.
+* **MongoDB Atlas**: Cloud-based NoSQL database with schema-based modeling.
+* **Passport.js**: Robust authentication including Google OAuth 2.0.
+* **JWT & bcrypt**: Secure token-based auth and password hashing.
 
 ### External Services & Utilities
 
@@ -58,13 +59,15 @@
   <img src="https://img.shields.io/badge/Nodemailer-22B573?style=for-the-badge&logo=gmail&logoColor=white" alt="Nodemailer">
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
   <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white" alt="Postman">
+  <img src="https://img.shields.io/badge/Terraform-844FBA?style=for-the-badge&logo=terraform&logoColor=white" alt="Terraform">
 </p>
 
-- **Razorpay**: Integrated secure payment gateway with signature validation.
-- **Cloudinary**: Cloud-based image management and optimization.
-- **Nodemailer**: Automated transactional emails and OTP verification.
-- **ExcelJS & PDFKit**: Professional report and invoice generation.
-- **Sharp**: High-performance image processing and resizing.
+* **Razorpay**: Integrated secure payment gateway with signature validation.
+* **Cloudinary**: Cloud-based image management and optimization.
+* **Nodemailer**: Automated transactional emails and OTP verification.
+* **ExcelJS & PDFKit**: Professional report and invoice generation.
+* **Sharp**: High-performance image processing and resizing.
+* **Terraform**: Infrastructure as Code for provisioning and managing AWS infrastructure.
 
 ---
 
@@ -89,12 +92,12 @@ graph TD
     G --> H[Response]
 ```
 
-| Layer | Responsibility |
-|---|---|
-| **Models** | Define data structure (Users, Products, Orders) and interact with MongoDB |
-| **Views** | User interface built using EJS templates, served dynamically |
-| **Controllers** | Process requests, interact with models, and return views or data |
-| **Middlewares** | Handle authentication, authorization, and error processing |
+| Layer           | Responsibility                                                            |
+| --------------- | ------------------------------------------------------------------------- |
+| **Models**      | Define data structure (Users, Products, Orders) and interact with MongoDB |
+| **Views**       | User interface built using EJS templates, served dynamically              |
+| **Controllers** | Process requests, interact with models, and return views or data          |
+| **Middlewares** | Handle authentication, authorization, and error processing                |
 
 ---
 
@@ -102,19 +105,19 @@ graph TD
 
 ### For Users
 
-- **Omnichannel Auth**: Login via Email/Password or Google OAuth with OTP verification.
-- **Smart Shopping**: Advanced search, multi-category filtering, and product variants.
-- **Checkout Flow**: Seamless Razorpay integration with wallet system and coupon support.
-- **Account Hub**: Manage multiple addresses, track orders, and view transaction history.
-- **Interactive UI**: Live notifications, image cropping for profiles, and mobile-responsive design.
+* **Omnichannel Auth**: Login via Email/Password or Google OAuth with OTP verification.
+* **Smart Shopping**: Advanced search, multi-category filtering, and product variants.
+* **Checkout Flow**: Seamless Razorpay integration with wallet system and coupon support.
+* **Account Hub**: Manage multiple addresses, track orders, and view transaction history.
+* **Interactive UI**: Live notifications, image cropping for profiles, and mobile-responsive design.
 
 ### For Admins
 
-- **Analytics Dashboard**: Visual representations of revenue, sales, and customer growth.
-- **Inventory Command**: Full CRUD on products, brands, and categories with inventory alerts.
-- **Dynamic Offers**: Create product-specific offers, referral rewards, and coupon codes.
-- **Report Engine**: Export detailed sales reports in Excel and PDF formats.
-- **Order Control**: Manage order statuses, return requests, and cancellations.
+* **Analytics Dashboard**: Visual representations of revenue, sales, and customer growth.
+* **Inventory Command**: Full CRUD on products, brands, and categories with inventory alerts.
+* **Dynamic Offers**: Create product-specific offers, referral rewards, and coupon codes.
+* **Report Engine**: Export detailed sales reports in Excel and PDF formats.
+* **Order Control**: Manage order statuses, return requests, and cancellations.
 
 ---
 
@@ -130,6 +133,7 @@ glowly.com-2025/
 ├── public/             # Static assets (CSS, JS, Images)
 ├── routes/             # Express route definitions
 ├── views/              # EJS templates (The 'V' in MVC)
+├── terraform/          # Infrastructure as Code
 ├── .dockerignore       # Docker build exclusions
 ├── docker-compose.yml  # Multi-container Docker setup
 ├── Dockerfile          # Container image definition
@@ -141,11 +145,11 @@ glowly.com-2025/
 
 ## Security Highlights
 
-- **Data Protection**: Password hashing using `bcrypt`.
-- **Authentication**: Secure session management and JWT-based API protection.
-- **Payment Security**: Verified Razorpay integration with HMAC signature validation.
-- **Input Safety**: Input sanitization, CSRF protection, and route-level authorization.
-- **No Credentials Leaked**: All secrets managed via environment variables (`.env`).
+* **Data Protection**: Password hashing using `bcrypt`.
+* **Authentication**: Secure session management and JWT-based API protection.
+* **Payment Security**: Verified Razorpay integration with HMAC signature validation.
+* **Input Safety**: Input sanitization, CSRF protection, and route-level authorization.
+* **No Credentials Leaked**: All secrets managed via environment variables (`.env`).
 
 ---
 
@@ -154,37 +158,64 @@ glowly.com-2025/
 ### Local Development
 
 1. **Clone the repository**
-    ```bash
-    git clone https://github.com/your-username/glowly.com-2025.git
-    cd glowly.com-2025
-    ```
+
+   ```bash
+   git clone https://github.com/your-username/glowly.com-2025.git
+   cd glowly.com-2025
+   ```
 
 2. **Install dependencies**
-    ```bash
-    npm install
-    ```
+
+   ```bash
+   npm install
+   ```
 
 3. **Configure environment variables**
-    ```bash
-    cp .env.example .env
-    ```
+
+   ```bash
+   cp .env.example .env
+   ```
 
 4. **Start the development server**
-    ```bash
-    npm run dev
-    ```
+
+   ```bash
+   npm run dev
+   ```
 
 ### Docker Setup
 
 1. **Build and run with Docker Compose**
-    ```bash
-    docker-compose up --build
-    ```
+
+   ```bash
+   docker-compose up --build
+   ```
 
 2. **Stop containers**
-    ```bash
-    docker-compose down
-    ```
+
+   ```bash
+   docker-compose down
+   ```
+
+### Terraform Setup
+
+1. **Initialize Terraform**
+
+   ```bash
+   cd terraform
+   terraform init
+   ```
+
+2. **Review the infrastructure plan**
+
+   ```bash
+   terraform plan
+   ```
+
+3. **Apply the infrastructure**
+
+   ```bash
+   terraform apply
+   ```
 
 ---
 
@@ -192,12 +223,14 @@ glowly.com-2025/
 
 This project uses **GitHub Actions** for continuous integration and deployment.
 
-| Trigger | Action |
-|---|---|
+| Trigger                   | Action                                    |
+| ------------------------- | ----------------------------------------- |
 | Push to `main` / `master` | Build Docker image and push to Docker Hub |
-| Pull Request to `main` | Validate build only |
+| Pull Request to `main`    | Validate build only                       |
 
 Required GitHub repository secrets: `DOCKER_USERNAME`, `DOCKER_PASSWORD`.
+
+Terraform is used to provision and manage the AWS infrastructure required for deployment.
 
 ---
 
