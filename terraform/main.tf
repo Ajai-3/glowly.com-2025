@@ -27,7 +27,7 @@ resource "aws_security_group" "glowly" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = data.aws_ip_ranges.ec2_connect.cidr_blocks
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {

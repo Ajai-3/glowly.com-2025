@@ -50,6 +50,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.EC2_SSH_PASSPHRASE }}
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/glowly:latest
             docker stop glowly-app || true
